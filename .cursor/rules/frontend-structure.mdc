@@ -1,0 +1,45 @@
+---
+description: frontendのフォルダ構造を定義したファイルです。
+globs: 
+alwaysApply: false
+---
+/frontend
+├── app/
+│   ├── layout.tsx
+│   ├── page.tsx                     # トップページ（例：ログイン画面）
+│   ├── dashboard/                   # ログイン後の共通レイアウト
+│   │   ├── layout.tsx               # ログイン後の共通ナビゲーションなど
+│   │   ├── page.tsx                 # 管理者 or 正社員向けダッシュボード
+│   │   ├── profile/                 # マイページ関連
+│   │   │   ├── page.tsx             # プロフィール表示
+│   │   │   └── edit/page.tsx        # プロフィール編集画面
+│   │   ├── attendance/              # 勤怠管理（打刻）
+│   │   │   ├── page.tsx             # 出退勤ボタン表示画面
+│   │   │   └── history/page.tsx     # 勤怠履歴
+│   │   ├── expenses/                # 経費申請
+│   │   │   ├── page.tsx             # 申請画面
+│   │   │   └── history/page.tsx     # 申請履歴
+│   │   ├── allowances/              # その他手当申請
+│   │   │   ├── page.tsx
+│   │   │   └── history/page.tsx
+│   │   ├── paid-leave/
+│   │   │   ├── page.tsx             # 有給申請画面
+│   │   │   └── history/page.tsx
+│   │   ├── payslip/page.tsx         # 給与明細表示
+│   │   └── admin/                   # 管理者専用機能
+│   │       ├── users/page.tsx       # 社員一覧・検索
+│   │       ├── approvals/page.tsx   # 各種申請の承認一覧
+│   │       └── settings/page.tsx    # 管理設定（必要に応じて）
+├── components/                      # 共通コンポーネント
+│   ├── Header.tsx
+│   ├── Sidebar.tsx
+│   └── ...
+├── lib/                             # API通信関連
+│   └── apiClient.ts                 # fetchラッパーなど
+├── hooks/                           # カスタムHooks
+├── types/                           # 型定義（UserProfile, AttendanceRecordなど）
+├── constants/                       # 定数
+├── utils/                           # 汎用関数
+├── styles/                          # CSS / Tailwind / SCSSなど
+├── middleware.ts                    # 認証チェック用
+└── ...

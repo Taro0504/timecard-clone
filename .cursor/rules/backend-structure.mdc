@@ -1,0 +1,39 @@
+---
+description: backendのフォルダ構造を定義したファイルです。
+globs: 
+alwaysApply: false
+---
+/backend
+├── app/
+│   ├── main.py                      # FastAPIのエントリポイント
+│   ├── routers/                     # 各機能ごとのエンドポイント定義
+│   │   ├── auth.py                  # 認証（ログイン／登録）
+│   │   ├── user.py                  # ユーザー情報・プロフィール
+│   │   ├── attendance.py            # 勤怠打刻・履歴
+│   │   ├── expenses.py              # 経費申請
+│   │   ├── allowances.py            # その他手当申請
+│   │   ├── paid_leave.py            # 有給申請
+│   │   ├── payslip.py               # 給与明細閲覧
+│   │   └── admin.py                 # 管理者操作（承認など）
+│   ├── models/                      # ORMモデル（SQLAlchemyなど）
+│   │   ├── user.py
+│   │   ├── attendance.py
+│   │   └── ...
+│   ├── schemas/                     # Pydanticモデル（リクエスト・レスポンス用）
+│   │   ├── user.py
+│   │   ├── attendance.py
+│   │   └── ...
+│   ├── services/                    # ビジネスロジック層
+│   │   ├── auth_service.py
+│   │   ├── attendance_service.py
+│   │   └── ...
+│   ├── utils/                       # 汎用関数（例：トークン検証）
+│   ├── core/                        # 設定、認証ミドルウェア、DB接続
+│   │   ├── config.py
+│   │   ├── database.py
+│   │   └── security.py
+│   └── dependencies/               # 共通依存解決（get_current_userなど）
+├── tests/                           # テストコード
+│   └── ...
+├── requirements.txt or pyproject.toml
+└── ...

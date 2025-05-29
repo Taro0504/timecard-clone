@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # PostgreSQLデータベース
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: timecard_db
+      POSTGRES_USER: timecard_user
+      POSTGRES_PASSWORD: timecard_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U timecard_user -d timecard_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # FastAPIバックエンド
+  backend:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://timecard_user:timecard_password@db:5432/timecard_db
+      - SECRET_KEY=your-secret-key-here
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+  # Next.jsフロントエンド
+  frontend:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    command: npm run dev
+
+volumes:
+  postgres_data: 

@@ -1,0 +1,28 @@
+{
+  "name": "timecard-clone",
+  "version": "1.0.0",
+  "description": "タイムカードクローンアプリケーション",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{js,ts,tsx,json,md}\""
+  },
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.18.0",
+    "prettier": "^3.3.2",
+    "turbo": "^2.0.0",
+    "typescript": "^5.5.4"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20.18.0",
+    "pnpm": ">=9.0.0"
+  }
+}

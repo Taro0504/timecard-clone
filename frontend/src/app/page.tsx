@@ -53,17 +53,33 @@ export default function Dashboard() {
       <div className="max-w-4xl mx-auto">
         {/* ヘッダー */}
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            FunctionalLab Timecard Dashboard
-          </h1>
-          <p className="text-gray-600">
-            {currentTime.toLocaleDateString('ja-JP', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-              weekday: 'long',
-            })}
-          </p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                FunctionalLab Timecard Dashboard
+              </h1>
+              <p className="text-gray-600">
+                {currentTime.toLocaleDateString('ja-JP', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  weekday: 'long',
+                })}
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="text-right">
+                <p className="text-sm text-gray-600">ログイン中</p>
+                <p className="font-medium text-gray-800">ユーザー</p>
+              </div>
+              <a
+                href="/login"
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                ログアウト
+              </a>
+            </div>
+          </div>
         </header>
 
         {/* メインコンテンツ */}

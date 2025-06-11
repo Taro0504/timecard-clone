@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 // バリデーションスキーマ
 const loginSchema = z.object({
@@ -24,7 +24,9 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const {
     register,
@@ -34,6 +36,16 @@ export default function LoginPage() {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
+
+  // 登録成功メッセージの表示
+  useEffect(() => {
+    const registered = searchParams.get('registered');
+    if (registered === 'true') {
+      setShowSuccessMessage(true);
+      // 5秒後にメッセージを非表示
+      setTimeout(() => setShowSuccessMessage(false), 5000);
+    }
+  }, [searchParams]);
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
@@ -77,6 +89,23 @@ export default function LoginPage() {
 
           {/* ログインフォーム */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* 登録成功メッセージ */}
+            {showSuccessMessage && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="flex">
+                  <span className="text-green-500 mr-2">✅</span>
+                  <div>
+                    <span className="text-green-700 text-sm font-medium">
+                      アカウントが正常に作成されました！
+                    </span>
+                    <p className="text-green-600 text-sm mt-1">
+                      作成したメールアドレスとパスワードでログインしてください。
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* エラーメッセージ */}
             {errors.root && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">

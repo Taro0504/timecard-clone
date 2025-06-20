@@ -10,7 +10,7 @@ alwaysApply: false
 │   ├── dashboard/                   # ログイン後の共通レイアウト
 │   │   ├── layout.tsx               # ログイン後の共通ナビゲーションなど
 │   │   ├── page.tsx                 # 管理者 or 正社員向けダッシュボード
-│   │   ├── profile/                 # マイページ関連
+│   │   ├── mypage/                  # マイページ関連
 │   │   │   ├── page.tsx             # プロフィール表示
 │   │   │   └── edit/page.tsx        # プロフィール編集画面
 │   │   ├── attendance/              # 勤怠管理（打刻）

@@ -38,19 +38,8 @@ interface SocialInsurance {
   pensionNumber: string;
 }
 
-interface ApplicationHistory {
-  id: string;
-  type: 'expense' | 'allowance' | 'paid-leave';
-  title: string;
-  amount?: number;
-  date: string;
-  status: 'pending' | 'approved' | 'rejected';
-}
-
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<
-    'profile' | 'applications' | 'payslip'
-  >('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'payslip'>('profile');
 
   // ダミーデータ
   const userProfile: UserProfile = {
@@ -83,66 +72,10 @@ export default function ProfilePage() {
     },
   };
 
-  const applicationHistory: ApplicationHistory[] = [
-    {
-      id: '1',
-      type: 'expense',
-      title: '交通費申請（出張）',
-      amount: 5000,
-      date: '2024-12-18',
-      status: 'approved',
-    },
-    {
-      id: '2',
-      type: 'paid-leave',
-      title: '有給休暇申請',
-      date: '2024-12-15',
-      status: 'pending',
-    },
-    {
-      id: '3',
-      type: 'allowance',
-      title: '残業手当申請',
-      amount: 15000,
-      date: '2024-12-10',
-      status: 'approved',
-    },
-  ];
-
-  const getStatusBadge = (status: string) => {
-    const statusMap = {
-      normal: { bg: 'bg-green-100', text: 'text-green-800', label: '正常' },
-      late: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: '遅刻' },
-      early: { bg: 'bg-blue-100', text: 'text-blue-800', label: '早退' },
-      absent: { bg: 'bg-red-100', text: 'text-red-800', label: '欠勤' },
-      pending: {
-        bg: 'bg-yellow-100',
-        text: 'text-yellow-800',
-        label: '承認待ち',
-      },
-      approved: {
-        bg: 'bg-green-100',
-        text: 'text-green-800',
-        label: '承認済み',
-      },
-      rejected: { bg: 'bg-red-100', text: 'text-red-800', label: '却下' },
-    };
-
-    const config = statusMap[status as keyof typeof statusMap];
-    return (
-      <span
-        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.bg} ${config.text}`}
-      >
-        {config.label}
-      </span>
-    );
-  };
-
   const tabs = [
     { id: 'profile', name: '基本情報', icon: '👤' },
-    { id: 'applications', name: '申請履歴', icon: '📋' },
     { id: 'payslip', name: '給与明細', icon: '💰' },
-  ];
+  ] as const;
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -158,7 +91,7 @@ export default function ProfilePage() {
             </p>
           </div>
           <Link
-            href="/dashboard/profile/edit"
+            href="/dashboard/mypage/edit"
             className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
           >
             プロフィール編集
@@ -196,7 +129,7 @@ export default function ProfilePage() {
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === tab.id
                     ? 'border-blue-500 text-blue-600'
@@ -383,55 +316,12 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {activeTab === 'applications' && (
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-gray-900">申請履歴</h3>
-              <div className="space-x-4">
-                <Link
-                  href="/dashboard/expenses"
-                  className="text-blue-600 hover:text-blue-700 font-medium"
-                >
-                  新規申請
-                </Link>
-              </div>
-            </div>
-            <div className="space-y-4">
-              {applicationHistory.map((application) => (
-                <div
-                  key={application.id}
-                  className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-gray-900">
-                        {application.title}
-                      </h4>
-                      <p className="text-sm text-gray-600 mt-1">
-                        申請日: {application.date}
-                        {application.amount && (
-                          <span className="ml-4">
-                            金額: ¥{application.amount.toLocaleString()}
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                    <div className="flex items-center">
-                      {getStatusBadge(application.status)}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {activeTab === 'payslip' && (
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-gray-900">給与明細</h3>
               <Link
-                href="/dashboard/payslip"
+                href="#"
                 className="text-blue-600 hover:text-blue-700 font-medium"
               >
                 詳細を見る →

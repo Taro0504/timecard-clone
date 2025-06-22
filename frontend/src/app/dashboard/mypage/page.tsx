@@ -38,15 +38,6 @@ interface SocialInsurance {
   pensionNumber: string;
 }
 
-interface AttendanceRecord {
-  date: string;
-  clockIn: string;
-  clockOut: string;
-  breakTime: string;
-  workingHours: string;
-  status: 'normal' | 'late' | 'early' | 'absent';
-}
-
 interface ApplicationHistory {
   id: string;
   type: 'expense' | 'allowance' | 'paid-leave';
@@ -58,7 +49,7 @@ interface ApplicationHistory {
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<
-    'profile' | 'attendance' | 'applications' | 'payslip'
+    'profile' | 'applications' | 'payslip'
   >('profile');
 
   // ダミーデータ
@@ -91,33 +82,6 @@ export default function ProfilePage() {
       pensionNumber: '1234-567890',
     },
   };
-
-  const attendanceRecords: AttendanceRecord[] = [
-    {
-      date: '2024-12-20',
-      clockIn: '09:00',
-      clockOut: '18:00',
-      breakTime: '1:00',
-      workingHours: '8:00',
-      status: 'normal',
-    },
-    {
-      date: '2024-12-19',
-      clockIn: '09:15',
-      clockOut: '18:15',
-      breakTime: '1:00',
-      workingHours: '8:00',
-      status: 'late',
-    },
-    {
-      date: '2024-12-18',
-      clockIn: '09:00',
-      clockOut: '17:30',
-      breakTime: '1:00',
-      workingHours: '7:30',
-      status: 'early',
-    },
-  ];
 
   const applicationHistory: ApplicationHistory[] = [
     {
@@ -176,7 +140,6 @@ export default function ProfilePage() {
 
   const tabs = [
     { id: 'profile', name: '基本情報', icon: '👤' },
-    { id: 'attendance', name: '勤怠履歴', icon: '⏰' },
     { id: 'applications', name: '申請履歴', icon: '📋' },
     { id: 'payslip', name: '給与明細', icon: '💰' },
   ];
@@ -417,70 +380,6 @@ export default function ProfilePage() {
                 </div>
               </div>
             )}
-          </div>
-        )}
-
-        {activeTab === 'attendance' && (
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-gray-900">勤怠履歴</h3>
-              <Link
-                href="/dashboard/attendance/history"
-                className="text-blue-600 hover:text-blue-700 font-medium"
-              >
-                詳細を見る →
-              </Link>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      日付
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      出勤時刻
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      退勤時刻
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      休憩時間
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      勤務時間
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      ステータス
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {attendanceRecords.map((record, index) => (
-                    <tr key={index}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {record.date}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {record.clockIn}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {record.clockOut}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {record.breakTime}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {record.workingHours}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {getStatusBadge(record.status)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
           </div>
         )}
 

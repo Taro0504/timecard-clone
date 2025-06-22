@@ -100,41 +100,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 今日の勤怠サマリー */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <span className="text-2xl mr-3">📅</span>
-            <div>
-              <p className="text-sm font-medium text-gray-500">
-                今日の勤務時間
-              </p>
-              <p className="text-2xl font-bold text-gray-900">8:00</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <span className="text-2xl mr-3">☕</span>
-            <div>
-              <p className="text-sm font-medium text-gray-500">休憩時間</p>
-              <p className="text-2xl font-bold text-gray-900">1:00</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <span className="text-2xl mr-3">📊</span>
-            <div>
-              <p className="text-sm font-medium text-gray-500">月の勤務時間</p>
-              <p className="text-2xl font-bold text-gray-900">160:30</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* 最近のお知らせ */}
       <div className="bg-white rounded-lg shadow p-6">
         <h3 className="text-lg font-bold text-gray-900 mb-4">最新のお知らせ</h3>

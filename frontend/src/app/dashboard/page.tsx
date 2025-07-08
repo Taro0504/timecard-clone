@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   const [isWorking, setIsWorking] = useState(false);
@@ -24,7 +25,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       {/* ウェルカムメッセージ */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -98,6 +99,87 @@ export default function DashboardPage() {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* クイックアクセス */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <Link
+          href="/dashboard/expenses"
+          className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
+        >
+          <div className="flex items-center">
+            <span className="text-3xl mr-4">💰</span>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">経費申請</h3>
+              <p className="text-sm text-gray-600">業務経費の申請</p>
+            </div>
+          </div>
+        </Link>
+
+        <Link
+          href="/dashboard/allowances"
+          className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
+        >
+          <div className="flex items-center">
+            <span className="text-3xl mr-4">💼</span>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">その他手当</h3>
+              <p className="text-sm text-gray-600">各種手当の申請</p>
+            </div>
+          </div>
+        </Link>
+
+        <Link
+          href="#"
+          className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
+        >
+          <div className="flex items-center">
+            <span className="text-3xl mr-4">🌴</span>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">有給申請</h3>
+              <p className="text-sm text-gray-600">有給休暇の申請</p>
+            </div>
+          </div>
+        </Link>
+
+        <Link
+          href="/dashboard/attendance"
+          className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
+        >
+          <div className="flex items-center">
+            <span className="text-3xl mr-4">⏰</span>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">勤怠管理</h3>
+              <p className="text-sm text-gray-600">勤怠記録の確認</p>
+            </div>
+          </div>
+        </Link>
+
+        <Link
+          href="/dashboard/mypage"
+          className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
+        >
+          <div className="flex items-center">
+            <span className="text-3xl mr-4">👤</span>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">マイページ</h3>
+              <p className="text-sm text-gray-600">個人情報の確認</p>
+            </div>
+          </div>
+        </Link>
+
+        <Link
+          href="#"
+          className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
+        >
+          <div className="flex items-center">
+            <span className="text-3xl mr-4">📄</span>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">給与明細</h3>
+              <p className="text-sm text-gray-600">給与明細の確認</p>
+            </div>
+          </div>
+        </Link>
       </div>
 
       {/* 最近のお知らせ */}

@@ -182,6 +182,54 @@ export default function DashboardPage() {
         </Link>
       </div>
 
+      {/* 管理者向けセクション */}
+      <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl shadow-lg p-6 mb-8">
+        <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+          <span className="mr-2">👑</span>
+          管理者メニュー
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Link
+            href="/dashboard/admin/users"
+            className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center">
+              <span className="text-2xl mr-3">👥</span>
+              <div>
+                <h4 className="font-semibold text-gray-900">社員管理</h4>
+                <p className="text-sm text-gray-600">社員情報の管理</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/dashboard/admin/approvals"
+            className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center">
+              <span className="text-2xl mr-3">✅</span>
+              <div>
+                <h4 className="font-semibold text-gray-900">申請承認</h4>
+                <p className="text-sm text-gray-600">各種申請の承認</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/dashboard/admin/settings"
+            className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center">
+              <span className="text-2xl mr-3">⚙️</span>
+              <div>
+                <h4 className="font-semibold text-gray-900">管理設定</h4>
+                <p className="text-sm text-gray-600">システム設定</p>
+              </div>
+            </div>
+          </Link>
+        </div>
+      </div>
+
       {/* 最近のお知らせ */}
       <div className="bg-white rounded-lg shadow p-6">
         <h3 className="text-lg font-bold text-gray-900 mb-4">最新のお知らせ</h3>

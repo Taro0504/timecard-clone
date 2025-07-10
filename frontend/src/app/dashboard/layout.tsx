@@ -3,6 +3,20 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  FaHome,
+  FaUser,
+  FaClock,
+  FaMoneyBill,
+  FaBriefcase,
+  FaCalendarAlt,
+  FaFileAlt,
+  FaUsers,
+  FaCheckCircle,
+  FaCog,
+  FaBars,
+  FaBell,
+} from 'react-icons/fa';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -17,37 +31,37 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     {
       name: 'ダッシュボード',
       href: '/dashboard',
-      icon: '🏠',
+      icon: FaHome,
     },
     {
       name: 'マイページ',
       href: '/dashboard/mypage',
-      icon: '👤',
+      icon: FaUser,
     },
     {
       name: '勤怠管理',
       href: '/dashboard/attendance',
-      icon: '⏰',
+      icon: FaClock,
     },
     {
       name: '経費申請',
       href: '/dashboard/expenses',
-      icon: '💰',
+      icon: FaMoneyBill,
     },
     {
       name: 'その他手当',
       href: '/dashboard/allowances',
-      icon: '💼',
+      icon: FaBriefcase,
     },
     {
       name: '有給申請',
       href: '/dashboard/paid-leave',
-      icon: '🌴',
+      icon: FaCalendarAlt,
     },
     {
       name: '給与明細',
       href: '/dashboard/payslip',
-      icon: '📄',
+      icon: FaFileAlt,
     },
   ];
 
@@ -56,17 +70,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     {
       name: '社員管理',
       href: '/dashboard/admin/users',
-      icon: '👥',
+      icon: FaUsers,
     },
     {
       name: '申請承認',
       href: '/dashboard/admin/approvals',
-      icon: '✅',
+      icon: FaCheckCircle,
     },
     {
       name: '管理設定',
       href: '/dashboard/admin/settings',
-      icon: '⚙️',
+      icon: FaCog,
     },
   ];
 
@@ -109,14 +123,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             {navigation.map((item) => (
               <Link
                 key={item.name}
-                href={item.href as any}
+                href={item.href}
                 className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive(item.href)
                     ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <span className="mr-3 text-lg">{item.icon}</span>
+                <item.icon className="mr-3 text-lg" />
                 {item.name}
               </Link>
             ))}
@@ -130,14 +144,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 {adminNavigation.map((item) => (
                   <Link
                     key={item.name}
-                    href={item.href as any}
+                    href={item.href}
                     className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       isActive(item.href)
                         ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600'
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
-                    <span className="mr-3 text-lg">{item.icon}</span>
+                    <item.icon className="mr-3 text-lg" />
                     {item.name}
                   </Link>
                 ))}
@@ -170,7 +184,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                 className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 lg:hidden"
               >
-                <span className="text-xl">☰</span>
+                <FaBars className="text-xl" />
               </button>
               <h1 className="ml-2 text-lg font-semibold text-gray-900 lg:ml-0">
                 {navigation.find((item) => isActive(item.href))?.name ||
@@ -182,7 +196,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="flex items-center space-x-4">
               {/* 通知アイコン */}
               <button className="p-2 rounded-lg text-gray-500 hover:bg-gray-100">
-                <span className="text-lg">🔔</span>
+                <FaBell className="text-lg" />
               </button>
 
               {/* ログアウトボタン */}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 // 型定義
 interface ApprovalItem {
@@ -218,7 +219,7 @@ export default function AdminApprovalsPage() {
 
         <div className="bg-green-50 rounded-xl p-6">
           <div className="flex items-center">
-            <span className="text-green-500 text-2xl mr-3">✅</span>
+            <FaCheckCircle className="text-green-500 text-2xl mr-3" />
             <div>
               <p className="text-sm font-medium text-green-700">承認済み</p>
               <p className="text-2xl font-bold text-green-900">
@@ -230,7 +231,7 @@ export default function AdminApprovalsPage() {
 
         <div className="bg-red-50 rounded-xl p-6">
           <div className="flex items-center">
-            <span className="text-red-500 text-2xl mr-3">❌</span>
+            <FaTimesCircle className="text-red-500 text-2xl mr-3" />
             <div>
               <p className="text-sm font-medium text-red-700">却下</p>
               <p className="text-2xl font-bold text-red-900">

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { FaCheckCircle, FaCog, FaExclamationTriangle } from 'react-icons/fa';
 
 export default function DashboardPage() {
   const [isWorking, setIsWorking] = useState(false);
@@ -194,7 +195,7 @@ export default function DashboardPage() {
             className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
           >
             <div className="flex items-center">
-              <span className="text-2xl mr-3">👥</span>
+              <FaCheckCircle className="text-2xl mr-3 text-green-500" />
               <div>
                 <h4 className="font-semibold text-gray-900">社員管理</h4>
                 <p className="text-sm text-gray-600">社員情報の管理</p>
@@ -207,7 +208,7 @@ export default function DashboardPage() {
             className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
           >
             <div className="flex items-center">
-              <span className="text-2xl mr-3">✅</span>
+              <FaCheckCircle className="text-2xl mr-3 text-green-500" />
               <div>
                 <h4 className="font-semibold text-gray-900">申請承認</h4>
                 <p className="text-sm text-gray-600">各種申請の承認</p>
@@ -220,7 +221,7 @@ export default function DashboardPage() {
             className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
           >
             <div className="flex items-center">
-              <span className="text-2xl mr-3">⚙️</span>
+              <FaCog className="text-2xl mr-3 text-blue-500" />
               <div>
                 <h4 className="font-semibold text-gray-900">管理設定</h4>
                 <p className="text-sm text-gray-600">システム設定</p>
@@ -245,7 +246,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex items-start p-3 bg-green-50 rounded-lg">
-            <span className="text-green-500 mr-3 mt-0.5">✅</span>
+            <FaCheckCircle className="text-green-500 mr-3 mt-0.5 text-lg" />
             <div>
               <p className="text-sm font-medium text-green-900">
                 経費申請の締切について
@@ -255,7 +256,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex items-start p-3 bg-yellow-50 rounded-lg">
-            <span className="text-yellow-500 mr-3 mt-0.5">⚠️</span>
+            <FaExclamationTriangle className="text-yellow-500 mr-3 mt-0.5 text-lg" />
             <div>
               <p className="text-sm font-medium text-yellow-900">
                 システムメンテナンスのお知らせ

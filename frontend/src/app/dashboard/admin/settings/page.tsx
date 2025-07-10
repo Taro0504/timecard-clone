@@ -1,6 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import {
+  FaCog,
+  FaBuilding,
+  FaBell,
+  FaLock,
+  FaPlus,
+  FaSave,
+  FaUndo,
+} from 'react-icons/fa';
 
 // 型定義
 interface Department {
@@ -149,10 +158,10 @@ export default function AdminSettingsPage() {
   };
 
   const tabs = [
-    { id: 'general', name: '一般設定', icon: '⚙️' },
-    { id: 'departments', name: '部署管理', icon: '🏢' },
-    { id: 'notifications', name: '通知設定', icon: '🔔' },
-    { id: 'security', name: 'セキュリティ', icon: '🔒' },
+    { id: 'general', name: '一般設定', icon: FaCog },
+    { id: 'departments', name: '部署管理', icon: FaBuilding },
+    { id: 'notifications', name: '通知設定', icon: FaBell },
+    { id: 'security', name: 'セキュリティ', icon: FaLock },
   ];
 
   const filteredSettings = systemSettings.filter((setting) => {
@@ -173,11 +182,11 @@ export default function AdminSettingsPage() {
         </div>
         <div className="flex items-center space-x-4">
           <button className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
-            <span className="mr-2">💾</span>
+            <FaSave className="mr-2 inline" />
             設定を保存
           </button>
           <button className="px-4 py-2 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors">
-            <span className="mr-2">🔄</span>
+            <FaUndo className="mr-2 inline" />
             設定をリセット
           </button>
         </div>
@@ -205,7 +214,7 @@ export default function AdminSettingsPage() {
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <span className="mr-2 text-lg">{tab.icon}</span>
+                <tab.icon className="mr-2 text-lg" />
                 {tab.name}
               </button>
             ))}
@@ -253,7 +262,7 @@ export default function AdminSettingsPage() {
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-bold text-gray-900">部署管理</h3>
               <button className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors">
-                <span className="mr-2">➕</span>
+                <FaPlus className="mr-2 inline" />
                 新規部署追加
               </button>
             </div>

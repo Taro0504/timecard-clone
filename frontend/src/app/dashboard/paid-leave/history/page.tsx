@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { FaCheckCircle } from 'react-icons/fa';
 
 // 型定義
 interface PaidLeaveHistory {
@@ -156,7 +157,7 @@ export default function PaidLeaveHistoryPage() {
 
           {paidLeaveHistory.length === 0 && (
             <div className="text-center py-12">
-              <div className="text-gray-400 text-6xl mb-4">🌴</div>
+              <div className="text-gray-400 text-6xl mb-4">📋</div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
                 申請履歴がありません
               </h3>
@@ -180,7 +181,7 @@ export default function PaidLeaveHistoryPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-blue-50 rounded-lg p-4">
             <div className="flex items-center">
-              <span className="text-blue-500 text-2xl mr-3">📅</span>
+              <span className="text-blue-500 text-2xl mr-3">📊</span>
               <div>
                 <p className="text-sm font-medium text-blue-700">付与日数</p>
                 <p className="text-2xl font-bold text-blue-900">20日</p>
@@ -190,7 +191,7 @@ export default function PaidLeaveHistoryPage() {
 
           <div className="bg-green-50 rounded-lg p-4">
             <div className="flex items-center">
-              <span className="text-green-500 text-2xl mr-3">✅</span>
+              <FaCheckCircle className="text-green-500 text-2xl mr-3" />
               <div>
                 <p className="text-sm font-medium text-green-700">使用済み</p>
                 <p className="text-2xl font-bold text-green-900">8日</p>
@@ -200,7 +201,7 @@ export default function PaidLeaveHistoryPage() {
 
           <div className="bg-yellow-50 rounded-lg p-4">
             <div className="flex items-center">
-              <span className="text-yellow-500 text-2xl mr-3">⏳</span>
+              <span className="text-yellow-500 text-2xl mr-3">📊</span>
               <div>
                 <p className="text-sm font-medium text-yellow-700">残日数</p>
                 <p className="text-2xl font-bold text-yellow-900">12日</p>
@@ -211,7 +212,7 @@ export default function PaidLeaveHistoryPage() {
 
         <div className="mt-4 p-3 bg-gray-50 rounded-lg">
           <p className="text-sm text-gray-600">
-            💡
+            📝
             有給残日数は毎年4月1日に更新されます。詳細は人事部にお問い合わせください。
           </p>
         </div>

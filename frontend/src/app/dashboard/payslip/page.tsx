@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+
+import { FaExclamationTriangle } from 'react-icons/fa';
 
 // 型定義
 interface PayslipItem {
@@ -351,16 +352,15 @@ export default function PayslipPage() {
       {/* 注意事項 */}
       <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
         <div className="flex items-start">
-          <span className="text-yellow-500 text-lg mr-3 mt-0.5">⚠️</span>
+          <FaExclamationTriangle className="text-yellow-500 text-lg mr-3 mt-0.5" />
           <div>
             <h4 className="text-sm font-medium text-yellow-900 mb-2">
-              給与明細に関する注意事項
+              注意事項
             </h4>
-            <ul className="text-xs text-yellow-800 space-y-1">
+            <ul className="text-sm text-yellow-800 space-y-1">
               <li>• 給与明細は毎月25日に更新されます</li>
-              <li>• 控除項目は法律に基づいて計算されています</li>
-              <li>• 手当は勤務実績に応じて変動する場合があります</li>
-              <li>• ご不明な点がございましたら人事部にお問い合わせください</li>
+              <li>• 控除項目の詳細は人事部にお問い合わせください</li>
+              <li>• 給与に関する質問は給与発行日の翌日以降にお願いします</li>
             </ul>
           </div>
         </div>

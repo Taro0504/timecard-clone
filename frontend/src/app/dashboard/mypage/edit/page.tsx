@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
+import { FaExclamationTriangle } from 'react-icons/fa';
 
 // バリデーションスキーマ
 const profileEditSchema = z.object({
@@ -173,11 +174,9 @@ export default function ProfileEditPage() {
           {/* エラーメッセージ */}
           {errors.root && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <div className="flex">
-                <span className="text-red-500 mr-2">⚠️</span>
-                <span className="text-red-700 text-sm">
-                  {errors.root.message}
-                </span>
+              <div className="flex items-center">
+                <FaExclamationTriangle className="text-red-500 mr-2" />
+                <span className="text-red-700">更新に失敗しました</span>
               </div>
             </div>
           )}

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { FaPlus, FaCheckCircle } from 'react-icons/fa';
 
 // 型定義
 interface Employee {
@@ -191,7 +192,7 @@ export default function AdminUsersPage() {
         </div>
         <div className="flex items-center space-x-4">
           <button className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
-            <span className="mr-2">➕</span>
+            <FaPlus className="mr-2 inline" />
             新規社員登録
           </button>
           <button className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors">
@@ -217,11 +218,13 @@ export default function AdminUsersPage() {
 
         <div className="bg-green-50 rounded-xl p-6">
           <div className="flex items-center">
-            <span className="text-green-500 text-2xl mr-3">✅</span>
+            <FaCheckCircle className="text-green-500 text-2xl mr-3" />
             <div>
-              <p className="text-sm font-medium text-green-700">在籍者</p>
-              <p className="text-2xl font-bold text-green-900">
-                {employees.filter((emp) => emp.status === 'active').length}名
+              <p className="text-green-700 font-medium">
+                社員登録が完了しました
+              </p>
+              <p className="text-green-600 text-sm">
+                新しい社員がシステムに追加されました
               </p>
             </div>
           </div>

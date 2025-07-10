@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { FaExclamationTriangle } from 'react-icons/fa';
 
 // バリデーションスキーマ
 const paidLeaveSchema = z
@@ -268,7 +269,7 @@ export default function PaidLeavePage() {
           {/* 注意事項 */}
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
             <div className="flex items-start">
-              <span className="text-yellow-500 text-lg mr-3 mt-0.5">⚠️</span>
+              <FaExclamationTriangle className="text-yellow-500 text-lg mr-3 mt-0.5" />
               <div>
                 <h4 className="text-sm font-medium text-yellow-900 mb-2">
                   申請時の注意事項

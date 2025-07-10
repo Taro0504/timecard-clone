@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 
 // バリデーションスキーマ
 const loginSchema = z.object({
@@ -92,16 +92,9 @@ export default function LoginPage() {
             {/* 登録成功メッセージ */}
             {showSuccessMessage && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <div className="flex">
-                  <span className="text-green-500 mr-2">✅</span>
-                  <div>
-                    <span className="text-green-700 text-sm font-medium">
-                      アカウントが正常に作成されました！
-                    </span>
-                    <p className="text-green-600 text-sm mt-1">
-                      作成したメールアドレスとパスワードでログインしてください。
-                    </p>
-                  </div>
+                <div className="flex items-center">
+                  <FaCheckCircle className="text-green-500 mr-2" />
+                  <span className="text-green-700">ログインに成功しました</span>
                 </div>
               </div>
             )}
@@ -109,11 +102,9 @@ export default function LoginPage() {
             {/* エラーメッセージ */}
             {errors.root && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <div className="flex">
-                  <span className="text-red-500 mr-2">⚠️</span>
-                  <span className="text-red-700 text-sm">
-                    {errors.root.message}
-                  </span>
+                <div className="flex items-center">
+                  <FaExclamationTriangle className="text-red-500 mr-2" />
+                  <span className="text-red-700">ログインに失敗しました</span>
                 </div>
               </div>
             )}

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { FaClipboardList } from 'react-icons/fa';
 
 // 型定義
 interface AllowanceHistory {
@@ -142,7 +143,7 @@ export default function AllowanceHistoryPage() {
 
           {allowanceHistory.length === 0 && (
             <div className="text-center py-12">
-              <div className="text-gray-400 text-6xl mb-4">📋</div>
+              <FaClipboardList className="text-gray-400 text-6xl mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
                 申請履歴がありません
               </h3>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { FaUser, FaMoneyBill, FaChartBar, FaLightbulb } from 'react-icons/fa';
 
 // 型定義
 interface UserProfile {
@@ -73,8 +74,8 @@ export default function ProfilePage() {
   };
 
   const tabs = [
-    { id: 'profile', name: '基本情報', icon: '👤' },
-    { id: 'payslip', name: '給与明細', icon: '💰' },
+    { id: 'profile', name: '基本情報', icon: FaUser },
+    { id: 'payslip', name: '給与明細', icon: FaMoneyBill },
   ] as const;
 
   return (
@@ -136,7 +137,7 @@ export default function ProfilePage() {
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <span className="mr-2 text-lg">{tab.icon}</span>
+                <tab.icon className="mr-2 text-lg" />
                 {tab.name}
               </button>
             ))}
@@ -330,7 +331,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-blue-50 rounded-lg p-6">
                 <div className="flex items-center">
-                  <span className="text-2xl mr-3">💰</span>
+                  <FaMoneyBill className="text-2xl mr-3" />
                   <div>
                     <p className="text-sm font-medium text-blue-700">
                       今月の基本給
@@ -356,7 +357,7 @@ export default function ProfilePage() {
 
               <div className="bg-yellow-50 rounded-lg p-6">
                 <div className="flex items-center">
-                  <span className="text-2xl mr-3">📊</span>
+                  <FaChartBar className="text-2xl mr-3" />
                   <div>
                     <p className="text-sm font-medium text-yellow-700">
                       各種控除
@@ -371,7 +372,7 @@ export default function ProfilePage() {
 
             <div className="mt-6 p-4 bg-gray-50 rounded-lg">
               <p className="text-sm text-gray-600">
-                💡
+                <FaLightbulb />
                 最新の給与明細は毎月25日に更新されます。詳細な内訳は「詳細を見る」からご確認ください。
               </p>
             </div>

@@ -16,6 +16,7 @@ import {
   FaCog,
   FaBars,
   FaBell,
+  FaBuilding,
 } from 'react-icons/fa';
 
 interface DashboardLayoutProps {
@@ -113,7 +114,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {/* ロゴ */}
           <div className="flex items-center px-6 py-4 bg-blue-600">
             <div className="flex items-center">
-              <span className="text-2xl text-white mr-3">🏢</span>
+              <FaBuilding className="text-2xl text-white mr-3" />
               <h1 className="text-xl font-bold text-white">FunctionalLab</h1>
             </div>
           </div>

@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FaExclamationTriangle } from 'react-icons/fa';
+import { FaExclamationTriangle, FaCalendarAlt } from 'react-icons/fa';
 
 // バリデーションスキーマ
 const paidLeaveSchema = z
@@ -226,7 +226,7 @@ export default function PaidLeavePage() {
           {startDate && endDate && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-center">
-                <span className="text-blue-500 text-lg mr-3">📅</span>
+                <FaCalendarAlt className="text-blue-500 text-lg mr-3" />
                 <div>
                   <p className="text-sm font-medium text-blue-900">
                     申請日数: {calculateDays()}日

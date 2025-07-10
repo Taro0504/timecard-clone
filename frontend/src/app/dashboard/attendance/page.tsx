@@ -2,6 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import {
+  FaUserSlash,
+  FaPlayCircle,
+  FaStopCircle,
+  FaClock,
+} from 'react-icons/fa';
 
 const BREAK_OPTIONS = [
   { label: '0分', value: 0 },
@@ -122,7 +128,7 @@ export default function AttendancePage() {
             {isWorking ? (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                 <div className="flex items-center justify-center">
-                  <span className="text-green-500 text-2xl mr-3">⏰</span>
+                  <FaClock className="text-green-500 text-2xl mr-3" />
                   <div>
                     <p className="text-green-700 font-medium">勤務中</p>
                     <p className="text-green-600 text-sm">
@@ -134,13 +140,11 @@ export default function AttendancePage() {
             ) : (
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
                 <div className="flex items-center justify-center">
-                  <span className="text-gray-500 text-2xl mr-3">😴</span>
+                  <FaUserSlash className="text-gray-500 text-2xl mr-3" />
                   <div>
                     <p className="text-gray-700 font-medium">勤務外</p>
                     <p className="text-gray-600 text-sm">
-                      {workEndTime
-                        ? `退勤時刻: ${formatTime(workEndTime)}`
-                        : '出勤ボタンを押して勤務を開始してください'}
+                      出勤ボタンを押して勤務を開始してください
                     </p>
                   </div>
                 </div>
@@ -158,7 +162,7 @@ export default function AttendancePage() {
                   : 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl'
               }`}
             >
-              <span className="block text-2xl mb-2">🟢</span>
+              <FaPlayCircle className="block text-2xl mb-2" />
               出勤
             </button>
             <button
@@ -170,7 +174,7 @@ export default function AttendancePage() {
                   : 'bg-red-600 text-white hover:bg-red-700 shadow-lg hover:shadow-xl'
               }`}
             >
-              <span className="block text-2xl mb-2">🔴</span>
+              <FaStopCircle className="block text-2xl mb-2" />
               退勤
             </button>
           </div>

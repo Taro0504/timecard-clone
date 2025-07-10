@@ -2,7 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FaPlus, FaCheckCircle } from 'react-icons/fa';
+import {
+  FaPlus,
+  FaCheckCircle,
+  FaChartBar,
+  FaCrown,
+  FaCalendarAlt,
+} from 'react-icons/fa';
 
 // 型定義
 interface Employee {
@@ -196,7 +202,7 @@ export default function AdminUsersPage() {
             新規社員登録
           </button>
           <button className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors">
-            <span className="mr-2">📊</span>
+            <FaChartBar className="mr-2" />
             エクスポート
           </button>
         </div>
@@ -232,7 +238,7 @@ export default function AdminUsersPage() {
 
         <div className="bg-purple-50 rounded-xl p-6">
           <div className="flex items-center">
-            <span className="text-purple-500 text-2xl mr-3">👑</span>
+            <FaCrown className="text-purple-500 text-2xl mr-3" />
             <div>
               <p className="text-sm font-medium text-purple-700">管理者</p>
               <p className="text-2xl font-bold text-purple-900">
@@ -244,7 +250,7 @@ export default function AdminUsersPage() {
 
         <div className="bg-yellow-50 rounded-xl p-6">
           <div className="flex items-center">
-            <span className="text-yellow-500 text-2xl mr-3">📅</span>
+            <FaCalendarAlt className="text-yellow-500 text-2xl mr-3" />
             <div>
               <p className="text-sm font-medium text-yellow-700">今月入社</p>
               <p className="text-2xl font-bold text-yellow-900">

@@ -1,7 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import {
+  FaCheckCircle,
+  FaTimesCircle,
+  FaChartBar,
+  FaClipboardList,
+  FaMoneyBill,
+  FaBriefcase,
+  FaCalendarAlt,
+  FaClock,
+} from 'react-icons/fa';
 
 // 型定義
 interface ApprovalItem {
@@ -89,19 +98,19 @@ export default function AdminApprovalsPage() {
         bg: 'bg-blue-100',
         text: 'text-blue-800',
         label: '経費申請',
-        icon: '💰',
+        icon: FaMoneyBill,
       },
       allowance: {
         bg: 'bg-green-100',
         text: 'text-green-800',
         label: '手当申請',
-        icon: '💼',
+        icon: FaBriefcase,
       },
       'paid-leave': {
         bg: 'bg-purple-100',
         text: 'text-purple-800',
         label: '有給申請',
-        icon: '🌴',
+        icon: FaCalendarAlt,
       },
     };
 
@@ -110,7 +119,7 @@ export default function AdminApprovalsPage() {
       <span
         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.bg} ${config.text}`}
       >
-        <span className="mr-1">{config.icon}</span>
+        <config.icon className="mr-1" />
         {config.label}
       </span>
     );
@@ -185,7 +194,7 @@ export default function AdminApprovalsPage() {
         </div>
         <div className="flex items-center space-x-4">
           <button className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
-            <span className="mr-2">📊</span>
+            <FaChartBar className="mr-2" />
             承認履歴
           </button>
         </div>
@@ -195,7 +204,7 @@ export default function AdminApprovalsPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-blue-50 rounded-xl p-6">
           <div className="flex items-center">
-            <span className="text-blue-500 text-2xl mr-3">📋</span>
+            <FaClipboardList className="text-blue-500 text-2xl mr-3" />
             <div>
               <p className="text-sm font-medium text-blue-700">総申請数</p>
               <p className="text-2xl font-bold text-blue-900">
@@ -207,7 +216,7 @@ export default function AdminApprovalsPage() {
 
         <div className="bg-yellow-50 rounded-xl p-6">
           <div className="flex items-center">
-            <span className="text-yellow-500 text-2xl mr-3">⏳</span>
+            <FaClock className="text-yellow-500 text-2xl mr-3" />
             <div>
               <p className="text-sm font-medium text-yellow-700">承認待ち</p>
               <p className="text-2xl font-bold text-yellow-900">
@@ -398,7 +407,7 @@ export default function AdminApprovalsPage() {
 
         {filteredApprovals.length === 0 && (
           <div className="text-center py-12">
-            <div className="text-gray-400 text-6xl mb-4">📋</div>
+            <FaClipboardList className="text-gray-400 text-6xl mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               該当する申請が見つかりません
             </h3>

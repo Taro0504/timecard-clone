@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { FaExclamationTriangle } from 'react-icons/fa';
+import { FaExclamationTriangle, FaFileAlt, FaMoneyBill } from 'react-icons/fa';
 
 // 型定義
 interface PayslipItem {
@@ -128,7 +128,7 @@ export default function PayslipPage() {
         </div>
         <div className="flex items-center space-x-4">
           <button className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors">
-            <span className="mr-2">📄</span>
+            <FaFileAlt className="mr-2" />
             PDFダウンロード
           </button>
         </div>
@@ -171,7 +171,7 @@ export default function PayslipPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-blue-50 rounded-xl p-6">
           <div className="flex items-center">
-            <span className="text-blue-500 text-2xl mr-3">💰</span>
+            <FaMoneyBill className="text-blue-500 text-2xl mr-3" />
             <div>
               <p className="text-sm font-medium text-blue-700">基本給</p>
               <p className="text-2xl font-bold text-blue-900">

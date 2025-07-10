@@ -5,7 +5,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import {
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaBuilding,
+} from 'react-icons/fa';
 
 // バリデーションスキーマ
 const loginSchema = z.object({
@@ -78,7 +82,7 @@ export default function LoginPage() {
           <div className="text-center mb-8">
             <div className="mb-4">
               <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-2xl text-white">🏢</span>
+                <FaBuilding className="text-2xl text-white" />
               </div>
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">

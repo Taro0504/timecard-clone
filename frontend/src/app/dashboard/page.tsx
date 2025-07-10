@@ -2,7 +2,22 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FaCheckCircle, FaCog, FaExclamationTriangle } from 'react-icons/fa';
+import {
+  FaCheckCircle,
+  FaCog,
+  FaExclamationTriangle,
+  FaCrown,
+  FaBullhorn,
+  FaUserSlash,
+  FaPlayCircle,
+  FaStopCircle,
+  FaMoneyBill,
+  FaBriefcase,
+  FaCalendarAlt,
+  FaClock,
+  FaUser,
+  FaFileAlt,
+} from 'react-icons/fa';
 
 export default function DashboardPage() {
   const [isWorking, setIsWorking] = useState(false);
@@ -47,7 +62,7 @@ export default function DashboardPage() {
             {isWorking ? (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                 <div className="flex items-center justify-center">
-                  <span className="text-green-500 text-2xl mr-3">⏰</span>
+                  <FaClock className="text-green-500 text-2xl mr-3" />
                   <div>
                     <p className="text-green-700 font-medium">勤務中</p>
                     <p className="text-green-600 text-sm">
@@ -59,7 +74,7 @@ export default function DashboardPage() {
             ) : (
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
                 <div className="flex items-center justify-center">
-                  <span className="text-gray-500 text-2xl mr-3">😴</span>
+                  <FaUserSlash className="text-gray-500 text-2xl mr-3" />
                   <div>
                     <p className="text-gray-700 font-medium">勤務外</p>
                     <p className="text-gray-600 text-sm">
@@ -82,7 +97,7 @@ export default function DashboardPage() {
                   : 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl'
               }`}
             >
-              <span className="block text-2xl mb-2">🟢</span>
+              <FaPlayCircle className="block text-2xl mb-2" />
               出勤
             </button>
 
@@ -95,7 +110,7 @@ export default function DashboardPage() {
                   : 'bg-red-600 text-white hover:bg-red-700 shadow-lg hover:shadow-xl'
               }`}
             >
-              <span className="block text-2xl mb-2">🔴</span>
+              <FaStopCircle className="block text-2xl mb-2" />
               退勤
             </button>
           </div>
@@ -109,7 +124,7 @@ export default function DashboardPage() {
           className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
         >
           <div className="flex items-center">
-            <span className="text-3xl mr-4">💰</span>
+            <FaMoneyBill className="text-3xl mr-4" />
             <div>
               <h3 className="text-lg font-bold text-gray-900">経費申請</h3>
               <p className="text-sm text-gray-600">業務経費の申請</p>
@@ -122,7 +137,7 @@ export default function DashboardPage() {
           className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
         >
           <div className="flex items-center">
-            <span className="text-3xl mr-4">💼</span>
+            <FaBriefcase className="text-3xl mr-4" />
             <div>
               <h3 className="text-lg font-bold text-gray-900">その他手当</h3>
               <p className="text-sm text-gray-600">各種手当の申請</p>
@@ -135,7 +150,7 @@ export default function DashboardPage() {
           className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
         >
           <div className="flex items-center">
-            <span className="text-3xl mr-4">🌴</span>
+            <FaCalendarAlt className="text-3xl mr-4" />
             <div>
               <h3 className="text-lg font-bold text-gray-900">有給申請</h3>
               <p className="text-sm text-gray-600">有給休暇の申請</p>
@@ -148,7 +163,7 @@ export default function DashboardPage() {
           className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
         >
           <div className="flex items-center">
-            <span className="text-3xl mr-4">⏰</span>
+            <FaClock className="text-3xl mr-4" />
             <div>
               <h3 className="text-lg font-bold text-gray-900">勤怠管理</h3>
               <p className="text-sm text-gray-600">勤怠記録の確認</p>
@@ -161,7 +176,7 @@ export default function DashboardPage() {
           className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
         >
           <div className="flex items-center">
-            <span className="text-3xl mr-4">👤</span>
+            <FaUser className="text-3xl mr-4" />
             <div>
               <h3 className="text-lg font-bold text-gray-900">マイページ</h3>
               <p className="text-sm text-gray-600">個人情報の確認</p>
@@ -174,7 +189,7 @@ export default function DashboardPage() {
           className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
         >
           <div className="flex items-center">
-            <span className="text-3xl mr-4">📄</span>
+            <FaFileAlt className="text-3xl mr-4" />
             <div>
               <h3 className="text-lg font-bold text-gray-900">給与明細</h3>
               <p className="text-sm text-gray-600">給与明細の確認</p>
@@ -186,7 +201,7 @@ export default function DashboardPage() {
       {/* 管理者向けセクション */}
       <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl shadow-lg p-6 mb-8">
         <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-          <span className="mr-2">👑</span>
+          <FaCrown className="mr-2" />
           管理者メニュー
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -236,7 +251,7 @@ export default function DashboardPage() {
         <h3 className="text-lg font-bold text-gray-900 mb-4">最新のお知らせ</h3>
         <div className="space-y-3">
           <div className="flex items-start p-3 bg-blue-50 rounded-lg">
-            <span className="text-blue-500 mr-3 mt-0.5">📢</span>
+            <FaBullhorn className="text-blue-500 mr-3 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-blue-900">
                 年末年始の勤務予定について

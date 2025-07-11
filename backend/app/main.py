@@ -1,21 +1,28 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from app.core.config import settings
+from app.auth.router import router as auth_router
+from app.users.router import router as users_router
 
 app = FastAPI(
-    title="Timecard Clone API",
+    title=settings.app_name,
     description="タイムカードクローンアプリのバックエンドAPI",
-    version="0.1.0",
+    version=settings.app_version,
 )
 
 # CORS設定
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # フロントエンドのURL
+    allow_origins=settings.allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ルーターを追加
+app.include_router(auth_router)
+app.include_router(users_router)
 
 
 @app.get("/")

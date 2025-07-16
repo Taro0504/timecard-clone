@@ -1,5 +1,5 @@
 """認証の依存関係"""
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from app.database.database import get_db
@@ -52,4 +52,16 @@ def get_current_admin_user(current_user: User = Depends(get_current_active_user)
             status_code=status.HTTP_403_FORBIDDEN,
             detail="管理者権限が必要です"
         )
-    return current_user 
+    return current_user
+
+
+def get_token_from_request(request: Request) -> str:
+    """リクエストヘッダーからトークンを取得"""
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="認証トークンが必要です",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return auth_header.split(" ")[1] 

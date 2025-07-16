@@ -1,6 +1,7 @@
 """アプリケーション設定"""
 from pydantic_settings import BaseSettings
-from typing import Optional
+import json
+import os
 
 
 class Settings(BaseSettings):
@@ -23,10 +24,42 @@ class Settings(BaseSettings):
     # パスワード設定
     min_password_length: int = 8
     
+    # ログイン制限設定
+    enable_login_restriction: bool = True  # ログイン制限を有効にするか
+    allowed_users: list[str] = [
+        "admin@example.com",
+        "user@example.com",
+        # 追加の許可ユーザーをここに記述
+    ]
+    
     class Config:
         env_file = ".env"
         case_sensitive = False
+    
+    def save_allowed_users(self):
+        """許可ユーザーリストをファイルに保存"""
+        config_file = "login_restriction_config.json"
+        config_data = {
+            "enable_login_restriction": self.enable_login_restriction,
+            "allowed_users": self.allowed_users
+        }
+        with open(config_file, "w", encoding="utf-8") as f:
+            json.dump(config_data, f, ensure_ascii=False, indent=2)
+    
+    def load_allowed_users(self):
+        """許可ユーザーリストをファイルから読み込み"""
+        config_file = "login_restriction_config.json"
+        if os.path.exists(config_file):
+            try:
+                with open(config_file, "r", encoding="utf-8") as f:
+                    config_data = json.load(f)
+                    self.enable_login_restriction = config_data.get("enable_login_restriction", True)
+                    self.allowed_users = config_data.get("allowed_users", self.allowed_users)
+            except Exception as e:
+                print(f"設定ファイルの読み込みエラー: {e}")
 
 
 # 設定インスタンス
-settings = Settings() 
+settings = Settings()
+# 起動時に設定を読み込み
+settings.load_allowed_users() 

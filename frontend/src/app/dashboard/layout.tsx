@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   FaHome,
   FaUser,
@@ -17,7 +17,9 @@ import {
   FaBars,
   FaBell,
   FaBuilding,
+  FaSignOutAlt,
 } from 'react-icons/fa';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -26,6 +28,32 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout, isAuthenticated, isLoading } = useAuth();
+
+  // 認証チェック
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  // ローディング中は何も表示しない
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 認証されていない場合は何も表示しない（リダイレクト中）
+  if (!isAuthenticated) {
+    return null;
+  }
 
   // ナビゲーション項目
   const navigation = [
@@ -66,7 +94,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     },
   ];
 
-  // 管理者専用メニュー（現在はハードコーディング、後でrole基準に変更）
+  // 管理者専用メニュー
   const adminNavigation = [
     {
       name: '社員管理',
@@ -90,6 +118,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       return pathname === href;
     }
     return pathname.startsWith(href);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('ログアウトエラー:', error);
+    }
   };
 
   return (
@@ -136,40 +172,55 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </Link>
             ))}
 
-            {/* 管理者メニュー */}
-            <div className="pt-4 mt-4 border-t border-gray-200">
-              <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                管理者メニュー
-              </p>
-              <div className="mt-2 space-y-1">
-                {adminNavigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive(item.href)
-                        ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    <item.icon className="mr-3 text-lg" />
-                    {item.name}
-                  </Link>
-                ))}
+            {/* 管理者メニュー（管理者のみ表示） */}
+            {user?.role === 'admin' && (
+              <div className="pt-4 mt-4 border-t border-gray-200">
+                <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  管理者メニュー
+                </p>
+                <div className="mt-2 space-y-1">
+                  {adminNavigation.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        isActive(item.href)
+                          ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <item.icon className="mr-3 text-lg" />
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </nav>
 
           {/* ユーザー情報 */}
           <div className="flex items-center px-6 py-4 bg-gray-50 border-t border-gray-200">
             <div className="flex items-center">
               <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-medium">田</span>
+                <span className="text-white text-sm font-medium">
+                  {user?.last_name?.[0] || 'U'}
+                </span>
               </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-700">田中 太郎</p>
-                <p className="text-xs text-gray-500">正社員</p>
+              <div className="ml-3 flex-1">
+                <p className="text-sm font-medium text-gray-700">
+                  {user?.full_name || 'ユーザー'}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {user?.role === 'admin' ? '管理者' : '正社員'}
+                </p>
               </div>
+              <button
+                onClick={handleLogout}
+                className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                title="ログアウト"
+              >
+                <FaSignOutAlt className="text-sm" />
+              </button>
             </div>
           </div>
         </div>
@@ -201,7 +252,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </button>
 
               {/* ログアウトボタン */}
-              <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors flex items-center"
+              >
+                <FaSignOutAlt className="mr-2" />
                 ログアウト
               </button>
             </div>

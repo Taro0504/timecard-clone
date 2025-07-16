@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { FaExclamationTriangle, FaBuilding } from 'react-icons/fa';
+import { apiClient } from '@/lib/api';
 
 // バリデーションスキーマ
 const registerSchema = z
@@ -45,13 +46,13 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
     watch,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -87,26 +88,32 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
+    setErrorMessage(null);
 
     try {
-      // TODO: 実際の登録処理をここに実装
-      console.log('登録試行:', {
-        name: `${data.lastName} ${data.firstName}`,
+      // バックエンドAPIに登録リクエスト
+      await apiClient.register({
         email: data.email,
         password: data.password,
+        first_name: data.firstName,
+        last_name: data.lastName,
+        role: 'employee', // デフォルトは一般ユーザー
       });
 
-      // シミュレーション: 2秒後にログインページにリダイレクト
-      setTimeout(() => {
-        setIsLoading(false);
-        console.log('登録成功');
-        router.push('/login?registered=true');
-      }, 2000);
+      // 登録成功後、ログインページにリダイレクト
+      router.push('/login?registered=true');
     } catch (error) {
       setIsLoading(false);
-      setError('root', {
-        message: '登録に失敗しました。しばらく時間をおいて再度お試しください。',
-      });
+      console.error('登録エラー:', error);
+
+      // エラーメッセージを設定
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage(
+          '登録に失敗しました。しばらく時間をおいて再度お試しください。'
+        );
+      }
     }
   };
 
@@ -131,11 +138,11 @@ export default function RegisterPage() {
           {/* 登録フォーム */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* エラーメッセージ */}
-            {errors.root && (
+            {errorMessage && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <div className="flex items-center">
                   <FaExclamationTriangle className="text-red-500 mr-2" />
-                  <span className="text-red-700">登録に失敗しました</span>
+                  <span className="text-red-700">{errorMessage}</span>
                 </div>
               </div>
             )}

@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import {
   FaCheckCircle,
   FaExclamationTriangle,
   FaBuilding,
 } from 'react-icons/fa';
+import { useAuth } from '@/contexts/AuthContext';
 
 // バリデーションスキーマ
 const loginSchema = z.object({
@@ -29,17 +30,24 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const searchParams = useSearchParams();
+  const { login, isAuthenticated } = useAuth();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
+
+  // 既にログインしている場合はダッシュボードにリダイレクト
+  useEffect(() => {
+    if (isAuthenticated) {
+      window.location.href = '/dashboard';
+    }
+  }, [isAuthenticated]);
 
   // 登録成功メッセージの表示
   useEffect(() => {
@@ -53,23 +61,23 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
+    setErrorMessage(null);
 
     try {
-      // TODO: 実際のログイン処理をここに実装
-      console.log('ログイン試行:', data);
-
-      // シミュレーション: 2秒後にダッシュボードにリダイレクト
-      setTimeout(() => {
-        setIsLoading(false);
-        console.log('ログイン成功');
-        router.push('/');
-      }, 2000);
+      await login(data);
+      // ログイン成功時はAuthContextでリダイレクトが処理される
     } catch (error) {
       setIsLoading(false);
-      setError('root', {
-        message:
-          'ログインに失敗しました。メールアドレスとパスワードを確認してください。',
-      });
+      console.error('ログインエラー:', error);
+
+      // エラーメッセージを設定
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage(
+          'ログインに失敗しました。メールアドレスとパスワードを確認してください。'
+        );
+      }
     }
   };
 
@@ -98,17 +106,19 @@ export default function LoginPage() {
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <div className="flex items-center">
                   <FaCheckCircle className="text-green-500 mr-2" />
-                  <span className="text-green-700">ログインに成功しました</span>
+                  <span className="text-green-700">
+                    アカウントが正常に作成されました。ログインしてください。
+                  </span>
                 </div>
               </div>
             )}
 
             {/* エラーメッセージ */}
-            {errors.root && (
+            {errorMessage && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <div className="flex items-center">
                   <FaExclamationTriangle className="text-red-500 mr-2" />
-                  <span className="text-red-700">ログインに失敗しました</span>
+                  <span className="text-red-700">{errorMessage}</span>
                 </div>
               </div>
             )}

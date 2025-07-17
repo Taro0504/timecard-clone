@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   FaCheckCircle,
@@ -17,20 +17,70 @@ import {
   FaClock,
   FaUser,
   FaFileAlt,
+  FaSpinner,
 } from 'react-icons/fa';
+import { useAuth } from '@/contexts/AuthContext';
+import { apiClient, AttendanceRecord } from '@/lib/api';
 
 export default function DashboardPage() {
-  const [isWorking, setIsWorking] = useState(false);
-  const [workStartTime, setWorkStartTime] = useState<Date | null>(null);
+  const { user, token } = useAuth();
+  const [todayAttendance, setTodayAttendance] =
+    useState<AttendanceRecord | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleClockIn = () => {
-    setIsWorking(true);
-    setWorkStartTime(new Date());
+  // 今日の勤怠データを取得
+  useEffect(() => {
+    const fetchTodayAttendance = async () => {
+      if (!token) return;
+
+      try {
+        setIsLoading(true);
+        const today = await apiClient.getTodayAttendance(token);
+        setTodayAttendance(today);
+      } catch (error) {
+        console.error('今日の勤怠データ取得エラー:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTodayAttendance();
+  }, [token]);
+
+  const handleClockIn = async () => {
+    if (!token) return;
+
+    try {
+      setIsSubmitting(true);
+      const newAttendance = await apiClient.clockIn(token, {
+        break_minutes: 60, // デフォルト1時間
+      });
+      setTodayAttendance(newAttendance);
+    } catch (error) {
+      console.error('出勤エラー:', error);
+      alert('出勤の記録に失敗しました。');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleClockOut = () => {
-    setIsWorking(false);
-    setWorkStartTime(null);
+  const handleClockOut = async () => {
+    if (!token || !todayAttendance) return;
+
+    try {
+      setIsSubmitting(true);
+      const updatedAttendance = await apiClient.clockOut(token, {
+        clock_out: new Date().toISOString(),
+        break_minutes: todayAttendance.break_minutes,
+      });
+      setTodayAttendance(updatedAttendance);
+    } catch (error) {
+      console.error('退勤エラー:', error);
+      alert('退勤の記録に失敗しました。');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const formatTime = (date: Date) => {
@@ -40,12 +90,23 @@ export default function DashboardPage() {
     });
   };
 
+  const formatTimeFromString = (timeString: string | null | undefined) => {
+    if (!timeString) return '--:--';
+    const date = new Date(timeString);
+    return date.toLocaleTimeString('ja-JP', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const isWorking = todayAttendance && !todayAttendance.clock_out;
+
   return (
     <div className="max-w-6xl mx-auto">
       {/* ウェルカムメッセージ */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          おはようございます、田中さん！
+          おはようございます、{user?.first_name || 'ユーザー'}さん！
         </h1>
         <p className="text-gray-600">
           今日も1日がんばりましょう。現在の時刻: {formatTime(new Date())}
@@ -59,14 +120,32 @@ export default function DashboardPage() {
 
           {/* 現在の状態表示 */}
           <div className="mb-8">
-            {isWorking ? (
+            {isLoading ? (
+              <div className="flex items-center justify-center h-20">
+                <FaSpinner className="animate-spin text-2xl text-blue-600" />
+              </div>
+            ) : isWorking ? (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                 <div className="flex items-center justify-center">
                   <FaClock className="text-green-500 text-2xl mr-3" />
                   <div>
                     <p className="text-green-700 font-medium">勤務中</p>
                     <p className="text-green-600 text-sm">
-                      開始時刻: {workStartTime && formatTime(workStartTime)}
+                      開始時刻:{' '}
+                      {formatTimeFromString(todayAttendance?.clock_in)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : todayAttendance ? (
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+                <div className="flex items-center justify-center">
+                  <FaUserSlash className="text-gray-500 text-2xl mr-3" />
+                  <div>
+                    <p className="text-gray-700 font-medium">本日は退勤済み</p>
+                    <p className="text-gray-600 text-sm">
+                      出勤: {formatTimeFromString(todayAttendance.clock_in)} /
+                      退勤: {formatTimeFromString(todayAttendance.clock_out)}
                     </p>
                   </div>
                 </div>
@@ -90,27 +169,35 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto">
             <button
               onClick={handleClockIn}
-              disabled={isWorking}
+              disabled={isWorking || isSubmitting || !!todayAttendance}
               className={`py-6 px-8 rounded-xl font-bold text-lg transition-all duration-200 ${
-                isWorking
+                isWorking || isSubmitting || !!todayAttendance
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl'
               }`}
             >
-              <FaPlayCircle className="block text-2xl mb-2" />
+              {isSubmitting ? (
+                <FaSpinner className="block text-2xl mb-2 animate-spin" />
+              ) : (
+                <FaPlayCircle className="block text-2xl mb-2" />
+              )}
               出勤
             </button>
 
             <button
               onClick={handleClockOut}
-              disabled={!isWorking}
+              disabled={!isWorking || isSubmitting}
               className={`py-6 px-8 rounded-xl font-bold text-lg transition-all duration-200 ${
-                !isWorking
+                !isWorking || isSubmitting
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'bg-red-600 text-white hover:bg-red-700 shadow-lg hover:shadow-xl'
               }`}
             >
-              <FaStopCircle className="block text-2xl mb-2" />
+              {isSubmitting ? (
+                <FaSpinner className="block text-2xl mb-2 animate-spin" />
+              ) : (
+                <FaStopCircle className="block text-2xl mb-2" />
+              )}
               退勤
             </button>
           </div>
@@ -199,52 +286,54 @@ export default function DashboardPage() {
       </div>
 
       {/* 管理者向けセクション */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl shadow-lg p-6 mb-8">
-        <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-          <FaCrown className="mr-2" />
-          管理者メニュー
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Link
-            href="/dashboard/admin/users"
-            className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
-          >
-            <div className="flex items-center">
-              <FaCheckCircle className="text-2xl mr-3 text-green-500" />
-              <div>
-                <h4 className="font-semibold text-gray-900">社員管理</h4>
-                <p className="text-sm text-gray-600">社員情報の管理</p>
+      {user?.role === 'admin' && (
+        <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl shadow-lg p-6 mb-8">
+          <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+            <FaCrown className="mr-2" />
+            管理者メニュー
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Link
+              href="/dashboard/admin/users"
+              className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-center">
+                <FaCheckCircle className="text-2xl mr-3 text-green-500" />
+                <div>
+                  <h4 className="font-semibold text-gray-900">社員管理</h4>
+                  <p className="text-sm text-gray-600">社員情報の管理</p>
+                </div>
               </div>
-            </div>
-          </Link>
+            </Link>
 
-          <Link
-            href="/dashboard/admin/approvals"
-            className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
-          >
-            <div className="flex items-center">
-              <FaCheckCircle className="text-2xl mr-3 text-green-500" />
-              <div>
-                <h4 className="font-semibold text-gray-900">申請承認</h4>
-                <p className="text-sm text-gray-600">各種申請の承認</p>
+            <Link
+              href="/dashboard/admin/approvals"
+              className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-center">
+                <FaCheckCircle className="text-2xl mr-3 text-green-500" />
+                <div>
+                  <h4 className="font-semibold text-gray-900">申請承認</h4>
+                  <p className="text-sm text-gray-600">各種申請の承認</p>
+                </div>
               </div>
-            </div>
-          </Link>
+            </Link>
 
-          <Link
-            href="/dashboard/admin/settings"
-            className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
-          >
-            <div className="flex items-center">
-              <FaCog className="text-2xl mr-3 text-blue-500" />
-              <div>
-                <h4 className="font-semibold text-gray-900">管理設定</h4>
-                <p className="text-sm text-gray-600">システム設定</p>
+            <Link
+              href="/dashboard/admin/settings"
+              className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-center">
+                <FaCog className="text-2xl mr-3 text-blue-500" />
+                <div>
+                  <h4 className="font-semibold text-gray-900">管理設定</h4>
+                  <p className="text-sm text-gray-600">システム設定</p>
+                </div>
               </div>
-            </div>
-          </Link>
+            </Link>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 最近のお知らせ */}
       <div className="bg-white rounded-lg shadow p-6">

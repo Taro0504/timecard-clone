@@ -1,146 +1,49 @@
 'use client';
 
-interface AttendanceRecord {
-  date: string;
-  clockIn: string;
-  clockOut: string;
-  breakTime: string;
-  workingHours: string;
-  status: 'normal' | 'late' | 'early' | 'absent';
-  notes?: string;
-}
-
-const allAttendanceRecords: AttendanceRecord[] = [
-  // ... (20件ほどのダミーデータ)
-  {
-    date: '2024-12-20',
-    clockIn: '09:00',
-    clockOut: '18:00',
-    breakTime: '1:00',
-    workingHours: '8:00',
-    status: 'normal',
-  },
-  {
-    date: '2024-12-19',
-    clockIn: '09:15',
-    clockOut: '18:15',
-    breakTime: '1:00',
-    workingHours: '8:00',
-    status: 'late',
-  },
-  {
-    date: '2024-12-18',
-    clockIn: '09:00',
-    clockOut: '17:30',
-    breakTime: '1:00',
-    workingHours: '7:30',
-    status: 'early',
-  },
-  {
-    date: '2024-12-17',
-    clockIn: '09:00',
-    clockOut: '18:00',
-    breakTime: '1:00',
-    workingHours: '8:00',
-    status: 'normal',
-  },
-  {
-    date: '2024-12-16',
-    clockIn: '09:00',
-    clockOut: '18:00',
-    breakTime: '1:00',
-    workingHours: '8:00',
-    status: 'normal',
-  },
-  {
-    date: '2024-12-13',
-    clockIn: '09:00',
-    clockOut: '18:00',
-    breakTime: '1:00',
-    workingHours: '8:00',
-    status: 'normal',
-  },
-  {
-    date: '2024-12-12',
-    clockIn: '09:00',
-    clockOut: '18:00',
-    breakTime: '1:00',
-    workingHours: '8:00',
-    status: 'normal',
-  },
-  {
-    date: '2024-12-11',
-    clockIn: '09:05',
-    clockOut: '18:00',
-    breakTime: '1:00',
-    workingHours: '7:55',
-    status: 'late',
-  },
-  {
-    date: '2024-12-10',
-    clockIn: '09:00',
-    clockOut: '18:00',
-    breakTime: '1:00',
-    workingHours: '8:00',
-    status: 'normal',
-  },
-  {
-    date: '2024-12-09',
-    clockIn: '09:00',
-    clockOut: '18:00',
-    breakTime: '1:00',
-    workingHours: '8:00',
-    status: 'normal',
-  },
-  {
-    date: '2024-12-06',
-    clockIn: '09:00',
-    clockOut: '18:00',
-    breakTime: '1:00',
-    workingHours: '8:00',
-    status: 'normal',
-  },
-  {
-    date: '2024-12-05',
-    clockIn: '09:00',
-    clockOut: '18:00',
-    breakTime: '1:00',
-    workingHours: '8:00',
-    status: 'normal',
-  },
-  {
-    date: '2024-12-04',
-    clockIn: '09:00',
-    clockOut: '18:00',
-    breakTime: '1:00',
-    workingHours: '8:00',
-    status: 'normal',
-  },
-  {
-    date: '2024-12-03',
-    clockIn: '09:00',
-    clockOut: '18:00',
-    breakTime: '1:00',
-    workingHours: '8:00',
-    status: 'normal',
-  },
-  {
-    date: '2024-12-02',
-    clockIn: '09:00',
-    clockOut: '18:00',
-    breakTime: '1:00',
-    workingHours: '8:00',
-    status: 'normal',
-  },
-];
+import { useState, useEffect } from 'react';
+import { FaSpinner, FaDownload } from 'react-icons/fa';
+import { useAuth } from '@/contexts/AuthContext';
+import { apiClient, AttendanceRecord } from '@/lib/api';
 
 export default function AttendanceHistoryPage() {
+  const { token } = useAuth();
+  const [attendanceRecords, setAttendanceRecords] = useState<
+    AttendanceRecord[]
+  >([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+
+  // 勤怠履歴を取得
+  useEffect(() => {
+    const fetchAttendanceHistory = async () => {
+      if (!token) return;
+
+      try {
+        setIsLoading(true);
+        const history = await apiClient.getAttendanceHistory(
+          token,
+          selectedYear,
+          selectedMonth
+        );
+        setAttendanceRecords(history);
+      } catch (error) {
+        console.error('勤怠履歴取得エラー:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAttendanceHistory();
+  }, [token, selectedYear, selectedMonth]);
+
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      normal: { bg: 'bg-green-100', text: 'text-green-800', label: '正常' },
+      present: { bg: 'bg-green-100', text: 'text-green-800', label: '正常' },
       late: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: '遅刻' },
-      early: { bg: 'bg-blue-100', text: 'text-blue-800', label: '早退' },
+      early_leave: { bg: 'bg-blue-100', text: 'text-blue-800', label: '早退' },
       absent: { bg: 'bg-red-100', text: 'text-red-800', label: '欠勤' },
+      half_day: { bg: 'bg-orange-100', text: 'text-orange-800', label: '半休' },
     };
     const config = statusMap[status as keyof typeof statusMap];
     return (
@@ -152,6 +55,70 @@ export default function AttendanceHistoryPage() {
     );
   };
 
+  const formatTime = (timeString: string | null | undefined) => {
+    if (!timeString) return '--:--';
+    const date = new Date(timeString);
+    return date.toLocaleTimeString('ja-JP', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ja-JP', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+  };
+
+  // 実働時間計算
+  const getWorkDuration = (attendance: AttendanceRecord) => {
+    if (!attendance.clock_out) return '--:--';
+
+    const startTime = new Date(attendance.clock_in!);
+    const endTime = new Date(attendance.clock_out);
+    const ms =
+      endTime.getTime() -
+      startTime.getTime() -
+      attendance.break_minutes * 60 * 1000;
+
+    if (ms <= 0) return '0:00';
+    const h = Math.floor(ms / (1000 * 60 * 60));
+    const m = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+    return `${h}:${m.toString().padStart(2, '0')}`;
+  };
+
+  const formatBreakTime = (minutes: number) => {
+    if (minutes === 0) return '0分';
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return hours > 0
+      ? `${hours}時間${mins > 0 ? mins + '分' : ''}`
+      : `${mins}分`;
+  };
+
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedYear(Number(e.target.value));
+  };
+
+  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedMonth(Number(e.target.value));
+  };
+
+  const handleExportCSV = () => {
+    // CSVエクスポート機能（将来的に実装）
+    alert('CSVエクスポート機能は準備中です');
+  };
+
+  // 年と月の選択肢を生成
+  const years = Array.from(
+    { length: 5 },
+    (_, i) => new Date().getFullYear() - i
+  );
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="mb-8">
@@ -162,74 +129,105 @@ export default function AttendanceHistoryPage() {
       <div className="bg-white rounded-xl shadow-lg p-8">
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
           <div className="flex items-center gap-4">
-            <select className="border rounded-lg px-3 py-2">
-              <option>2024年</option>
-              <option>2023年</option>
+            <select
+              value={selectedYear}
+              onChange={handleYearChange}
+              className="border rounded-lg px-3 py-2"
+            >
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}年
+                </option>
+              ))}
             </select>
-            <select className="border rounded-lg px-3 py-2">
-              <option>12月</option>
-              <option>11月</option>
-              <option>10月</option>
+            <select
+              value={selectedMonth}
+              onChange={handleMonthChange}
+              className="border rounded-lg px-3 py-2"
+            >
+              {months.map((month) => (
+                <option key={month} value={month}>
+                  {month}月
+                </option>
+              ))}
             </select>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-              表示
-            </button>
           </div>
-          <button className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800">
+          <button
+            onClick={handleExportCSV}
+            className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 flex items-center gap-2"
+          >
+            <FaDownload />
             CSVダウンロード
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  日付
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  出勤
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  退勤
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  休憩
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  実働
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ステータス
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {allAttendanceRecords.map((record) => (
-                <tr key={record.date}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {record.date}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {record.clockIn}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {record.clockOut}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {record.breakTime}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {record.workingHours}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {getStatusBadge(record.status)}
-                  </td>
+        {isLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <FaSpinner className="animate-spin text-4xl text-blue-600" />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    日付
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    出勤
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    退勤
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    休憩
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    実働
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    ステータス
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {attendanceRecords.length > 0 ? (
+                  attendanceRecords.map((record) => (
+                    <tr key={record.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatDate(record.date)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatTime(record.clock_in)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatTime(record.clock_out)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatBreakTime(record.break_minutes)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {getWorkDuration(record)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getStatusBadge(record.status)}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="px-6 py-4 text-center text-sm text-gray-500"
+                    >
+                      指定された期間の勤怠履歴がありません
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

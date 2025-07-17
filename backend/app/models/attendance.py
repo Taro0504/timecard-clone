@@ -24,6 +24,7 @@ class AttendanceRecord(Base):
     date = Column(Date, nullable=False, index=True)
     clock_in = Column(DateTime(timezone=True), nullable=True)
     clock_out = Column(DateTime(timezone=True), nullable=True)
+    break_minutes = Column(Integer, default=60)  # 休憩時間（分）
     total_hours = Column(Float, default=0.0)  # 総勤務時間（時間）
     overtime_hours = Column(Float, default=0.0)  # 残業時間（時間）
     status = Column(Enum(AttendanceStatus), default=AttendanceStatus.PRESENT, nullable=False)

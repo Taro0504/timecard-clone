@@ -1,7 +1,7 @@
 """勤怠管理APIルーター"""
 from datetime import date
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
 from sqlalchemy.orm import Session
 from app.database.database import get_db
 from app.models.user import User
@@ -20,11 +20,24 @@ router = APIRouter(prefix="/attendance", tags=["勤怠管理"])
 
 @router.post("/clock-in", response_model=AttendanceRecordResponse)
 async def clock_in(
+    raw_request: Request,
     request: ClockInRequest,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """出勤記録"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    # 生のリクエストボディを取得
+    body = await raw_request.body()
+    logger.info(f"Raw request body: {body}")
+    logger.info(f"Raw request body type: {type(body)}")
+    
+    logger.info(f"Parsed request: {request}")
+    logger.info(f"Request type: {type(request)}")
+    logger.info(f"Request dict: {request.dict()}")
+    
     try:
         record = AttendanceService.clock_in(db, current_user, request)
         return record
@@ -52,6 +65,22 @@ async def clock_out(
         )
 
 
+@router.post("/cancel-clock-out", response_model=AttendanceRecordResponse)
+async def cancel_clock_out(
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """退勤キャンセル"""
+    try:
+        record = AttendanceService.cancel_clock_out(db, current_user)
+        return record
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+
 @router.get("/today", response_model=AttendanceRecordResponse)
 async def get_today_record(
     current_user: User = Depends(get_current_active_user),
@@ -67,16 +96,50 @@ async def get_today_record(
     return record
 
 
-@router.get("/records", response_model=List[AttendanceRecordResponse])
-async def get_attendance_records(
-    start_date: date = Query(..., description="開始日"),
-    end_date: date = Query(..., description="終了日"),
+@router.get("/history", response_model=List[AttendanceRecordResponse])
+async def get_attendance_history(
+    year: Optional[int] = Query(None, description="年"),
+    month: Optional[int] = Query(None, description="月"),
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """勤怠記録一覧を取得"""
-    records = AttendanceService.get_user_records(db, current_user.id, start_date, end_date)
+    """勤怠履歴を取得"""
+    if year and month:
+        # 指定された年月の記録を取得
+        from datetime import datetime
+        import calendar
+        first_day = date(year, month, 1)
+        last_day = date(year, month, calendar.monthrange(year, month)[1])
+    else:
+        # 過去30日間の記録を取得
+        from datetime import timedelta
+        end_date = date.today()
+        start_date = end_date - timedelta(days=30)
+        first_day = start_date
+        last_day = end_date
+
+    records = AttendanceService.get_user_records(db, current_user.id, first_day, last_day)
     return records
+
+
+@router.get("/summary", response_model=List[AttendanceSummary])
+async def get_attendance_summary(
+    year: Optional[int] = Query(None, description="年"),
+    month: Optional[int] = Query(None, description="月"),
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """勤怠集計を取得"""
+    if year and month:
+        summary = AttendanceService.get_monthly_summary(db, current_user.id, year, month)
+        return summary.get("records", [])
+    else:
+        # 過去30日間の集計を取得
+        from datetime import timedelta
+        end_date = date.today()
+        start_date = end_date - timedelta(days=30)
+        records = AttendanceService.get_user_records(db, current_user.id, start_date, end_date)
+        return records
 
 
 @router.get("/summary/monthly", response_model=MonthlyAttendanceSummary)

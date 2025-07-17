@@ -20,6 +20,7 @@ class AttendanceRecordUpdate(BaseModel):
     """勤怠記録更新スキーマ"""
     clock_in: Optional[datetime] = None
     clock_out: Optional[datetime] = None
+    break_minutes: Optional[int] = None
     total_hours: Optional[float] = None
     overtime_hours: Optional[float] = None
     status: Optional[AttendanceStatus] = None
@@ -32,6 +33,7 @@ class AttendanceRecordResponse(AttendanceRecordBase):
     user_id: int
     clock_in: Optional[datetime] = None
     clock_out: Optional[datetime] = None
+    break_minutes: int
     total_hours: float
     overtime_hours: float
     status: AttendanceStatus
@@ -47,11 +49,14 @@ class AttendanceRecordResponse(AttendanceRecordBase):
 
 class ClockInRequest(BaseModel):
     """出勤リクエストスキーマ"""
+    break_minutes: int = 60  # デフォルト1時間
     notes: Optional[str] = None
 
 
 class ClockOutRequest(BaseModel):
     """退勤リクエストスキーマ"""
+    clock_out: str  # ISO形式の日時文字列
+    break_minutes: int = 60  # デフォルト1時間
     notes: Optional[str] = None
 
 

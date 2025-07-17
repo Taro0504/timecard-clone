@@ -8,7 +8,7 @@ from app.core.security import get_password_hash
 def init_db() -> None:
     """データベースを初期化"""
     # テーブル作成
-    from app.models import user  # モデルをインポートしてテーブルを作成
+    from app.models import user, attendance  # モデルをインポートしてテーブルを作成
     from app.database.database import Base
     
     Base.metadata.create_all(bind=engine)

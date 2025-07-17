@@ -1,6 +1,7 @@
 """ユーザーモデル"""
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Enum
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from app.database.database import Base
 import enum
 
@@ -26,6 +27,9 @@ class User(Base):
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+    # リレーション
+    attendance_records = relationship("AttendanceRecord", back_populates="user")
 
     @property
     def full_name(self) -> str:

@@ -34,6 +34,18 @@ export interface RegisterRequest {
 }
 
 // 勤怠関連のインターフェース
+export interface BreakRecord {
+  id: number;
+  attendance_record_id: number;
+  break_start: string;
+  break_end: string | null;
+  duration_minutes: number;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  is_active: boolean;
+}
+
 export interface AttendanceRecord {
   id: number;
   user_id: number;
@@ -44,12 +56,16 @@ export interface AttendanceRecord {
   total_hours: number;
   overtime_hours: number;
   status: 'present' | 'absent' | 'late' | 'early_leave' | 'half_day';
+  break_status: 'working' | 'on_break';
   notes: string | null;
   created_at: string;
   updated_at: string;
   is_clocked_in: boolean;
   is_clocked_out: boolean;
   is_working: boolean;
+  is_on_break: boolean;
+  total_break_minutes: number;
+  break_records: BreakRecord[];
 }
 
 export interface AttendanceCreate {
@@ -200,6 +216,28 @@ class ApiClient {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
+    });
+  }
+
+  async startBreak(token: string, notes?: string): Promise<AttendanceRecord> {
+    return this.request<AttendanceRecord>('/attendance/break/start', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ notes }),
+    });
+  }
+
+  async endBreak(token: string, notes?: string): Promise<AttendanceRecord> {
+    return this.request<AttendanceRecord>('/attendance/break/end', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ notes }),
     });
   }
 

@@ -1,8 +1,8 @@
 """勤怠管理のPydanticスキーマ"""
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import date, datetime
-from app.models.attendance import AttendanceStatus
+from app.models.attendance import AttendanceStatus, BreakStatus
 
 
 class AttendanceRecordBase(BaseModel):
@@ -27,6 +27,32 @@ class AttendanceRecordUpdate(BaseModel):
     notes: Optional[str] = None
 
 
+class BreakRecordResponse(BaseModel):
+    """休憩記録応答スキーマ"""
+    id: int
+    attendance_record_id: int
+    break_start: datetime
+    break_end: Optional[datetime] = None
+    duration_minutes: int
+    notes: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+
+class BreakStartRequest(BaseModel):
+    """休憩開始リクエストスキーマ"""
+    notes: Optional[str] = None
+
+
+class BreakEndRequest(BaseModel):
+    """休憩終了リクエストスキーマ"""
+    notes: Optional[str] = None
+
+
 class AttendanceRecordResponse(AttendanceRecordBase):
     """勤怠記録応答スキーマ"""
     id: int
@@ -37,11 +63,15 @@ class AttendanceRecordResponse(AttendanceRecordBase):
     total_hours: float
     overtime_hours: float
     status: AttendanceStatus
+    break_status: BreakStatus
     created_at: datetime
     updated_at: datetime
     is_clocked_in: bool
     is_clocked_out: bool
     is_working: bool
+    is_on_break: bool
+    total_break_minutes: int
+    break_records: List[BreakRecordResponse] = []
 
     class Config:
         from_attributes = True

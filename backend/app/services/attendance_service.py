@@ -2,9 +2,9 @@
 from datetime import date, datetime, time, timezone
 from typing import Optional, List
 from sqlalchemy.orm import Session
-from app.models.attendance import AttendanceRecord, AttendanceStatus
+from app.models.attendance import AttendanceRecord, AttendanceStatus, BreakRecord, BreakStatus
 from app.models.user import User
-from app.schemas.attendance import ClockInRequest, ClockOutRequest
+from app.schemas.attendance import ClockInRequest, ClockOutRequest, BreakStartRequest, BreakEndRequest
 
 
 class AttendanceService:
@@ -173,6 +173,129 @@ class AttendanceService:
         db.commit()
         db.refresh(record)
         return record
+
+    @staticmethod
+    def start_break(db: Session, user: User, request: BreakStartRequest) -> AttendanceRecord:
+        """休憩開始処理"""
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        try:
+            # 今日の記録を取得
+            record = AttendanceService.get_today_record(db, user.id)
+            if not record:
+                raise ValueError("出勤記録が見つかりません")
+
+            logger.info(f"Found attendance record: {record.id}")
+
+            # 出勤していない場合
+            if not record.is_clocked_in:
+                raise ValueError("出勤していないため、休憩を開始できません")
+
+            # 既に退勤済みの場合
+            if record.is_clocked_out:
+                raise ValueError("退勤済みのため、休憩を開始できません")
+
+            # 既に休憩中の場合
+            if record.is_on_break:
+                raise ValueError("既に休憩中です")
+
+            logger.info("Starting break...")
+
+            # 休憩記録を作成
+            current_time = datetime.now(timezone.utc)
+            break_record = BreakRecord(
+                attendance_record_id=record.id,
+                break_start=current_time,
+                notes=request.notes
+            )
+            db.add(break_record)
+
+            # 勤怠記録のステータスを休憩中に変更
+            record.break_status = BreakStatus.ON_BREAK
+
+            db.commit()
+            db.refresh(record)
+            
+            logger.info(f"Break started successfully: {break_record.id}")
+            return record
+            
+        except Exception as e:
+            logger.error(f"Error in start_break: {str(e)}")
+            db.rollback()
+            raise
+
+    @staticmethod
+    def end_break(db: Session, user: User, request: BreakEndRequest) -> AttendanceRecord:
+        """休憩終了処理"""
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        try:
+            # 今日の記録を取得
+            record = AttendanceService.get_today_record(db, user.id)
+            if not record:
+                raise ValueError("出勤記録が見つかりません")
+
+            logger.info(f"Found attendance record: {record.id}")
+
+            # 出勤していない場合
+            if not record.is_clocked_in:
+                raise ValueError("出勤していないため、休憩を終了できません")
+
+            # 既に退勤済みの場合
+            if record.is_clocked_out:
+                raise ValueError("退勤済みのため、休憩を終了できません")
+
+            # 休憩中でない場合
+            if not record.is_on_break:
+                raise ValueError("休憩中ではありません")
+
+            logger.info(f"Record is on break: {record.break_status}")
+
+            # アクティブな休憩記録を取得
+            active_break = db.query(BreakRecord).filter(
+                BreakRecord.attendance_record_id == record.id,
+                BreakRecord.break_end.is_(None)
+            ).first()
+
+            if not active_break:
+                raise ValueError("アクティブな休憩記録が見つかりません")
+
+            logger.info(f"Found active break record: {active_break.id}")
+
+            # 休憩終了時間を記録
+            current_time = datetime.now(timezone.utc)
+            active_break.break_end = current_time
+
+            # 休憩時間を計算（タイムゾーンを統一）
+            break_start_utc = active_break.break_start
+            if break_start_utc.tzinfo is None:
+                break_start_utc = break_start_utc.replace(tzinfo=timezone.utc)
+            else:
+                break_start_utc = break_start_utc.astimezone(timezone.utc)
+            
+            break_duration = current_time - break_start_utc
+            active_break.duration_minutes = int(break_duration.total_seconds() / 60)
+
+            logger.info(f"Break duration calculated: {active_break.duration_minutes} minutes")
+
+            if request.notes:
+                active_break.notes = request.notes
+
+            # 勤怠記録のステータスを勤務中に戻す
+            record.break_status = BreakStatus.WORKING
+
+            db.commit()
+            db.refresh(record)
+            
+            logger.info("Break ended successfully")
+            return record
+            
+        except Exception as e:
+            logger.error(f"Error in end_break: {str(e)}")
+            db.rollback()
+            raise
 
     @staticmethod
     def get_user_records(db: Session, user_id: int, start_date: date, end_date: date) -> List[AttendanceRecord]:

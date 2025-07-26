@@ -9,6 +9,8 @@ import {
   FaClock,
   FaSpinner,
   FaUndo,
+  FaCoffee,
+  FaPlay,
 } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient, AttendanceRecord } from '@/lib/api';
@@ -151,6 +153,44 @@ export default function AttendancePage() {
     }
   };
 
+  const handleStartBreak = async () => {
+    if (!token || !todayAttendance) return;
+
+    try {
+      setIsSubmitting(true);
+      const updatedAttendance = await apiClient.startBreak(token);
+      setTodayAttendance(updatedAttendance);
+    } catch (error) {
+      console.error('休憩開始エラー:', error);
+      if (error instanceof Error) {
+        alert(`休憩開始に失敗しました: ${error.message}`);
+      } else {
+        alert('休憩開始に失敗しました。');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleEndBreak = async () => {
+    if (!token || !todayAttendance) return;
+
+    try {
+      setIsSubmitting(true);
+      const updatedAttendance = await apiClient.endBreak(token);
+      setTodayAttendance(updatedAttendance);
+    } catch (error) {
+      console.error('休憩終了エラー:', error);
+      if (error instanceof Error) {
+        alert(`休憩終了に失敗しました: ${error.message}`);
+      } else {
+        alert('休憩終了に失敗しました。');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleBreakChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setBreakMinutes(Number(e.target.value));
   };
@@ -214,17 +254,31 @@ export default function AttendancePage() {
           <h2 className="text-xl font-bold text-gray-900 mb-6">出退勤操作</h2>
           <div className="mb-8">
             {isWorking ? (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                <div className="flex items-center justify-center">
-                  <FaClock className="text-green-500 text-2xl mr-3" />
-                  <div>
-                    <p className="text-green-700 font-medium">勤務中</p>
-                    <p className="text-green-600 text-sm">
-                      開始時刻: {formatTime(todayAttendance?.clock_in)}
-                    </p>
+              todayAttendance?.is_on_break ? (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                  <div className="flex items-center justify-center">
+                    <FaCoffee className="text-yellow-500 text-2xl mr-3" />
+                    <div>
+                      <p className="text-yellow-700 font-medium">休憩中</p>
+                      <p className="text-yellow-600 text-sm">
+                        開始時刻: {formatTime(todayAttendance?.clock_in)}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                  <div className="flex items-center justify-center">
+                    <FaClock className="text-green-500 text-2xl mr-3" />
+                    <div>
+                      <p className="text-green-700 font-medium">勤務中</p>
+                      <p className="text-green-600 text-sm">
+                        開始時刻: {formatTime(todayAttendance?.clock_in)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )
             ) : (
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
                 <div className="flex items-center justify-center">
@@ -303,6 +357,49 @@ export default function AttendancePage() {
               </button>
             )}
           </div>
+
+          {/* 休憩管理ボタン */}
+          {isWorking && !todayAttendance?.is_on_break && (
+            <div className="mt-6">
+              <button
+                onClick={handleStartBreak}
+                disabled={isSubmitting}
+                className={`py-4 px-6 rounded-lg font-medium transition-all duration-200 ${
+                  isSubmitting
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl'
+                }`}
+              >
+                {isSubmitting ? (
+                  <FaSpinner className="inline text-lg mr-2 animate-spin" />
+                ) : (
+                  <FaCoffee className="inline text-lg mr-2" />
+                )}
+                休憩開始
+              </button>
+            </div>
+          )}
+
+          {todayAttendance?.is_on_break && (
+            <div className="mt-6">
+              <button
+                onClick={handleEndBreak}
+                disabled={isSubmitting}
+                className={`py-4 px-6 rounded-lg font-medium transition-all duration-200 ${
+                  isSubmitting
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-yellow-600 text-white hover:bg-yellow-700 shadow-lg hover:shadow-xl'
+                }`}
+              >
+                {isSubmitting ? (
+                  <FaSpinner className="inline text-lg mr-2 animate-spin" />
+                ) : (
+                  <FaPlay className="inline text-lg mr-2" />
+                )}
+                休憩終了
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -357,13 +454,50 @@ export default function AttendancePage() {
             </div>
           </div>
           <div className="mt-4">
-            <p className="text-gray-500 text-sm mb-1">休憩時間</p>
+            <p className="text-gray-500 text-sm mb-1">総休憩時間</p>
             <p className="text-lg font-bold text-gray-900">
-              {todayAttendance.break_minutes > 0
-                ? `${Math.floor(todayAttendance.break_minutes / 60)}時間${todayAttendance.break_minutes % 60 ? (todayAttendance.break_minutes % 60) + '分' : ''}`
+              {todayAttendance.total_break_minutes > 0
+                ? `${Math.floor(todayAttendance.total_break_minutes / 60)}時間${todayAttendance.total_break_minutes % 60 ? (todayAttendance.total_break_minutes % 60) + '分' : ''}`
                 : '0分'}
             </p>
           </div>
+
+          {/* 休憩履歴 */}
+          {todayAttendance.break_records &&
+            todayAttendance.break_records.length > 0 && (
+              <div className="mt-4">
+                <p className="text-gray-500 text-sm mb-2">休憩履歴</p>
+                <div className="space-y-2">
+                  {todayAttendance.break_records.map((breakRecord, index) => (
+                    <div
+                      key={breakRecord.id}
+                      className="bg-gray-50 rounded-lg p-3"
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="text-sm font-medium text-gray-700">
+                            休憩 {index + 1}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {formatTime(breakRecord.break_start)} -{' '}
+                            {breakRecord.break_end
+                              ? formatTime(breakRecord.break_end)
+                              : '進行中'}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-medium text-gray-700">
+                            {breakRecord.duration_minutes > 0
+                              ? `${breakRecord.duration_minutes}分`
+                              : '--'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           <div className="mt-4">
             <p className="text-gray-500 text-sm mb-1">ステータス</p>
             <div>{getStatusBadge(todayAttendance.status)}</div>

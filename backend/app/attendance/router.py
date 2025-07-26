@@ -9,6 +9,8 @@ from app.schemas.attendance import (
     AttendanceRecordResponse,
     ClockInRequest,
     ClockOutRequest,
+    BreakStartRequest,
+    BreakEndRequest,
     AttendanceSummary,
     MonthlyAttendanceSummary
 )
@@ -73,6 +75,40 @@ async def cancel_clock_out(
     """退勤キャンセル"""
     try:
         record = AttendanceService.cancel_clock_out(db, current_user)
+        return record
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+
+@router.post("/break/start", response_model=AttendanceRecordResponse)
+async def start_break(
+    request: BreakStartRequest,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """休憩開始"""
+    try:
+        record = AttendanceService.start_break(db, current_user, request)
+        return record
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+
+@router.post("/break/end", response_model=AttendanceRecordResponse)
+async def end_break(
+    request: BreakEndRequest,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """休憩終了"""
+    try:
+        record = AttendanceService.end_break(db, current_user, request)
         return record
     except ValueError as e:
         raise HTTPException(

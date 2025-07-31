@@ -9,6 +9,34 @@ alwaysApply: true
 ## 実装ルール
 
 フロントエンドのコードを実装する際は必ず .cursor/rules/frontend 以下のmdcファイルを読み込んで実装してください。
+また以下のファイルを読み込んだ際はどのファイルを読み込んだかをユーザーに伝えてください。
+
+- データフェッチ関連:
+  server-component.mdc
+  client-component-usecase.mdc
+  concurrent-fetch.mdc
+  interactive-fetch.mdc
+  data-loader.mdc
+  request-memoization.mdc
+
+- アーキテクチャパターン:
+  container-presentational-pattern.mdc
+  container-1st-design.mdc
+  composition-pattern.mdc
+  collocation.mdc
+
+- レンダリング・キャッシュ:
+  static-rendering-full-route-cache.mdc
+  dynamic-rendering-data-cache.mdc
+  router-cache.mdc
+  partial-pre-rendering.mdc
+  suspense-and-streaming.mdc
+
+- その他:
+  auth.mdc
+  error-handling.mdc
+  data-mutation.mdc
+  fine-grained-api-design.mdc
 
 ## その他参考サイト
 

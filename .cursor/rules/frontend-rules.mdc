@@ -1,6 +1,6 @@
 ---
 description: フロントエンド実装時のルールを定義します。
-globs:
+globs: '/frontend/**/*'
 alwaysApply: true
 ---
 

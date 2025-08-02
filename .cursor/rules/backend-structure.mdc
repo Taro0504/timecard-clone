@@ -1,8 +1,10 @@
 ---
 description: backendのフォルダ構造を定義したファイルです。
-globs: 
+globs: '/backend/**/*'
 alwaysApply: false
 ---
+
+```
 /backend
 ├── app/
 │   ├── main.py                      # FastAPIのエントリポイント
@@ -37,3 +39,4 @@ alwaysApply: false
 │   └── ...
 ├── requirements.txt or pyproject.toml
 └── ...
+```

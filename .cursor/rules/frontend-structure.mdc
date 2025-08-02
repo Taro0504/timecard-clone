@@ -1,8 +1,10 @@
 ---
 description: frontendのフォルダ構造を定義したファイルです。
-globs: 
+globs: '/backend/**/*'
 alwaysApply: false
 ---
+
+```
 /frontend
 ├── app/
 │   ├── layout.tsx
@@ -43,3 +45,4 @@ alwaysApply: false
 ├── styles/                          # CSS / Tailwind / SCSSなど
 ├── middleware.ts                    # 認証チェック用
 └── ...
+```

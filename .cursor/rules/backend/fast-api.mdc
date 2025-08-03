@@ -1,0 +1,26 @@
+---
+description:
+globs: '/backend/**/*'
+alwaysApply: false
+---
+
+## エンドポイント設計と命名規則
+
+- リソース名は複数形：/users、/items のように複数形に統一し、CRUD 操作を自然に表現する。
+- HTTP メソッドに忠実になるように
+  - GET /resources → 一覧取得
+  - GET /resources/{id} → 単一取得
+  - POST /resources → 作成
+  - PUT /resources/{id} → 全体更新
+  - PATCH /resources/{id} → 部分更新
+  - DELETE /resources/{id} → 削除
+
+## ドキュメントとOpen APIの活用
+
+- description／summary を活用して自動生成ドキュメントを充実させる
+- examples でリクエスト例・レスポンス例を示す
+
+## テストしやすいコード構造
+
+- サービス層（ビジネスロジック）を分離し、router は「受信→サービス呼び出し→返却」のみを担当。
+- 依存性注入をモック化して、DB や外部 API を差し替えた単体テストを実行。

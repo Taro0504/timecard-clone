@@ -1,0 +1,16 @@
+---
+description: バックエンド実装時のルールを定義します。
+globs: '/backend/**/*'
+alwaysApply: false
+---
+
+このファイルが読み込まれたら必ず「backend-rules.mdcを読み込みました！」と作業着手前にユーザーに必ず伝えてください。
+
+## 実装ルール
+
+バックエンドのコードを実装する際は必ず .cursor/rules/backend 以下のmdcファイルを読み込んで実装してください。
+また以下のファイルを読み込んだ際はどのファイルを読み込んだかをユーザーに伝えてください。
+async.mdc
+fast-api.mdc
+python.mdc
+schema.mdc

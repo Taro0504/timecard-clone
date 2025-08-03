@@ -1,0 +1,72 @@
+---
+description: Request, Responseモデルの定義について
+globs: 'backend/**/*'
+alwaysApply: false
+---
+
+Create, Read, Update のそれぞれでモデルを明確に分けて定義します。
+モデルを明確に分ける理由は権限やセキュリティ要件によって情報の出しわけを行うためです。
+
+## モデルの分割と継承
+
+- 共通部分（ItemBase） を分離し、Create／Read で継承する
+- Update はすべて Optional にして「部分更新（PATCH）」を表現する
+- response のモデルでは情報をパスワードや内部トークンを返却しないようReadモデルで隠蔽する
+- Field(..., gt=0) でバリデーションを行う
+
+```py
+from datetime import datetime
+from typing import Optional
+from pydantic import BaseModel, Field
+
+class ItemBase(BaseModel):
+    name: str = Field(..., min_length=1, max_length=100, example="Apple")
+    price: float = Field(..., gt=0, example=120.5)
+
+class ItemCreate(ItemBase):
+    # Create 用には追加フィールドなし
+    pass
+
+class ItemUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=100)
+    price: Optional[float] = Field(None, gt=0)
+
+class ItemRead(ItemBase):
+    id: int
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+```
+
+## validator
+
+複雑なバリデーションには root_validator を使用する
+
+```py
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    password_confirm: str
+
+    @root_validator
+    def passwords_match(cls, values):
+        pw, pwc = values.get("password"), values.get("password_confirm")
+        if pw != pwc:
+            raise ValueError("password と password_confirm が一致しません")
+        return values
+```
+
+## テスト
+
+モデル単体でのバリデーションテストを書くことで、将来の変更にも強くする
+
+```py
+import pytest
+from pydantic import ValidationError
+from app.models.item import ItemCreate
+
+def test_item_create_validation():
+    with pytest.raises(ValidationError):
+        ItemCreate(name="", price=-5)  # name 空、price 負の値は NG
+```

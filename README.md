@@ -6,12 +6,13 @@
 
 ### フロントエンド
 
-- **Next.js 15.3.2** (App Router)
+- **Next.js 15.1.0** (App Router)
 - **React 19.1.0**
 - **TypeScript 5.5.4**
-- **TailwindCSS 4.1**
+- **TailwindCSS 3.4.0**
 - **shadcn/ui**
 - **TanStack Query 5.56.2** (データフェッチング)
+- **TanStack Table 8.19.3** (テーブル管理)
 - **React Hook Form 7.53.0** (フォーム管理)
 - **Zod 3.23.8** (バリデーション)
 
@@ -27,9 +28,9 @@
 ### 開発ツール
 
 - **pnpm workspace** (モノレポ管理)
-- **Turbo** (ビルドシステム)
+- **Turbo 2.0.0** (ビルドシステム)
 - **Docker / Docker Compose** (開発環境)
-- **ESLint / Prettier** (コード品質)
+- **ESLint 9.6.0 / Prettier 3.3.2** (コード品質)
 
 ## プロジェクト構造
 
@@ -39,12 +40,25 @@ timecard-clone/
 │   ├── src/
 │   │   ├── app/              # App Router ページ
 │   │   ├── components/       # Reactコンポーネント
+│   │   ├── contexts/         # React Context
+│   │   ├── hooks/            # カスタムフック
 │   │   ├── lib/              # ユーティリティ
 │   │   └── types/            # TypeScript型定義
 │   └── public/               # 静的ファイル
 ├── backend/                   # FastAPI バックエンドアプリ
 │   ├── app/                  # FastAPIアプリケーション
-│   └── tests/                # テストファイル
+│   │   ├── auth/             # 認証関連
+│   │   ├── attendance/       # 勤怠管理
+│   │   ├── core/             # 設定・セキュリティ
+│   │   ├── database/         # データベース設定
+│   │   ├── models/           # SQLAlchemyモデル
+│   │   ├── schemas/          # Pydanticスキーマ
+│   │   ├── services/         # ビジネスロジック
+│   │   └── users/            # ユーザー管理
+│   ├── tests/                # テストファイル
+│   ├── create_users.py       # テストユーザー作成
+│   ├── check_users.py        # ユーザー確認
+│   └── reset_users.py        # ユーザーリセット
 ├── docker/                   # Docker設定ファイル
 ├── docker-compose.yml        # 開発環境構成
 └── turbo.json                # Turboビルド設定
@@ -54,10 +68,10 @@ timecard-clone/
 
 ### 前提条件
 
-- Node.js 20.18.0+
-- Python 3.11+
-- pnpm 9.0.0+
-- Docker & Docker Compose
+- **Node.js 20.4.0+**
+- **Python 3.11+**
+- **pnpm 9.0.0+**
+- **Docker & Docker Compose**
 
 ### 1. リポジトリのクローンと依存関係のインストール
 
@@ -92,6 +106,10 @@ docker-compose up -d
 
 # ログを確認
 docker-compose logs -f
+
+# 特定のサービスのログを確認
+docker-compose logs -f backend
+docker-compose logs -f frontend
 ```
 
 ### 4. ローカル開発環境での起動
@@ -100,10 +118,20 @@ docker-compose logs -f
 
 ```bash
 cd backend
+
+# 仮想環境の作成（初回のみ）
 python -m venv venv
-source venv/bin/activate  # Windowsの場合: venv\\Scripts\\activate
+
+# 仮想環境のアクティベート
+source venv/bin/activate  # macOS/Linux
+# または
+venv\Scripts\activate     # Windows
+
+# 依存関係のインストール
 pip install -e .[dev]
-uvicorn app.main:app --reload
+
+# 開発サーバーの起動
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 #### フロントエンド
@@ -115,7 +143,7 @@ pnpm dev
 
 ## 利用可能なコマンド
 
-### ルートディレクトリから
+### ルートディレクトリから（pnpm workspace）
 
 ```bash
 # 全サービスの開発サーバーを起動
@@ -138,8 +166,9 @@ pnpm format
 
 ```bash
 cd frontend
-pnpm dev          # 開発サーバー起動
+pnpm dev          # 開発サーバー起動 (http://localhost:3000)
 pnpm build        # プロダクションビルド
+pnpm start        # プロダクションサーバー起動
 pnpm lint         # ESLintチェック
 pnpm type-check   # TypeScriptチェック
 ```
@@ -148,11 +177,47 @@ pnpm type-check   # TypeScriptチェック
 
 ```bash
 cd backend
-pnpm dev          # 開発サーバー起動
+pnpm dev          # 開発サーバー起動 (http://localhost:8000)
+pnpm start        # プロダクションサーバー起動
 pnpm test         # pytest実行
 pnpm lint         # ruff + mypy チェック
 pnpm format       # black + ruff フォーマット
 ```
+
+## テストユーザー作成
+
+ローカルでのテストユーザーを作成したい場合は以下のコマンドを実行してください：
+
+```bash
+# backendディレクトリに移動
+cd backend
+
+# 仮想環境をアクティベート
+source venv/bin/activate  # macOS/Linux
+# または
+venv\Scripts\activate     # Windows
+
+# テストユーザーを作成
+python create_users.py
+```
+
+### 作成されるテストユーザー
+
+#### 管理者ユーザー
+
+- **メール**: `admin@example.com`
+- **パスワード**: `admin123`
+- **役職**: `admin`
+- **名前**: 管理者 太郎
+- **部署**: 人事部
+
+#### 一般ユーザー
+
+- **メール**: `user@example.com`
+- **パスワード**: `user123`
+- **役職**: `employee`
+- **名前**: 一般 ユーザー
+- **部署**: 開発部
 
 ## API仕様
 
@@ -167,27 +232,28 @@ pnpm format       # black + ruff フォーマット
 2. **型安全性**: TypeScriptの厳密な型チェックを活用
 3. **API連携**: OpenAPIスキーマから型を自動生成
 4. **テスト**: フロントエンド（Vitest）、バックエンド（pytest）
-5. **コード品質**: ESLint、Prettier、Ruff、Blackを使用
+5. **コード品質**: ESLint、Prettier、Ruffを使用
 
 ## mdcファイルについて
 
-このプロジェクトは主にcursorのAgentモードを使用して開発しています。
+このプロジェクトは主にCursorのAgentモードを使用して開発しています。
 mdcとはCursorのAIアシスタントが参照する、プロジェクト固有のルールやコンテキストを定義するための設定ファイルです。
 .cursor/rules/に配置することでCursorがファイルを読み取り開発をしてくれます。
-フォルダ構造は以下のようになっています。
+
+フォルダ構造は以下のようになっています：
 
 ```
 timecard-clone/
 └── .cursor/
     ├── rules/
     │   ├── backend/           # バックエンド開発時のルールの詳細
-    │   ├── frontend/          # フロントエンド開発時のルールの詳細
+    │   └── frontend/          # フロントエンド開発時のルールの詳細
     ├── backend-rules.mdc       # バックエンド開発時のルール
     ├── backend-structure.mdc   # バックエンドのフォルダ構造
     ├── frontend-rules.mdc      # フロントエンド開発時のルール
-    ├── frontend-structure.mdc  # フロントエンのフォルダ構造
+    ├── frontend-structure.mdc  # フロントエンドのフォルダ構造
     ├── project-rules.mdc       # 本プロジェクト開発時の共通ルール
-    ├── require-definition.mdc  # 本プロジェクトの要件定義の概要
+    └── requirements-definition.mdc  # 本プロジェクトの要件定義
 ```
 
 ## 注意事項
@@ -196,3 +262,5 @@ timecard-clone/
 - データベースマイグレーションは Alembic を使用
 - API型定義は OpenAPI スキーマから自動生成
 - pnpm workspace を使用しているため、npm/yarn は使用しないでください
+- Docker環境では PostgreSQL 15 を使用
+- 開発時は `pnpm dev` で全サービスを同時起動可能

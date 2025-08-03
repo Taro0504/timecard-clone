@@ -5,6 +5,7 @@
 ## 技術スタック
 
 ### フロントエンド
+
 - **Next.js 15.3.2** (App Router)
 - **React 19.1.0**
 - **TypeScript 5.5.4**
@@ -15,6 +16,7 @@
 - **Zod 3.23.8** (バリデーション)
 
 ### バックエンド
+
 - **FastAPI 0.111.0**
 - **Python 3.11**
 - **SQLAlchemy 2.0** (ORM)
@@ -23,6 +25,7 @@
 - **Alembic** (データベースマイグレーション)
 
 ### 開発ツール
+
 - **pnpm workspace** (モノレポ管理)
 - **Turbo** (ビルドシステム)
 - **Docker / Docker Compose** (開発環境)
@@ -50,6 +53,7 @@ timecard-clone/
 ## セットアップ
 
 ### 前提条件
+
 - Node.js 20.18.0+
 - Python 3.11+
 - pnpm 9.0.0+
@@ -93,6 +97,7 @@ docker-compose logs -f
 ### 4. ローカル開発環境での起動
 
 #### バックエンド（Python仮想環境）
+
 ```bash
 cd backend
 python -m venv venv
@@ -102,6 +107,7 @@ uvicorn app.main:app --reload
 ```
 
 #### フロントエンド
+
 ```bash
 cd frontend
 pnpm dev
@@ -110,6 +116,7 @@ pnpm dev
 ## 利用可能なコマンド
 
 ### ルートディレクトリから
+
 ```bash
 # 全サービスの開発サーバーを起動
 pnpm dev
@@ -128,6 +135,7 @@ pnpm format
 ```
 
 ### フロントエンドのみ
+
 ```bash
 cd frontend
 pnpm dev          # 開発サーバー起動
@@ -137,6 +145,7 @@ pnpm type-check   # TypeScriptチェック
 ```
 
 ### バックエンドのみ
+
 ```bash
 cd backend
 pnpm dev          # 開発サーバー起動
@@ -160,9 +169,30 @@ pnpm format       # black + ruff フォーマット
 4. **テスト**: フロントエンド（Vitest）、バックエンド（pytest）
 5. **コード品質**: ESLint、Prettier、Ruff、Blackを使用
 
+## mdcファイルについて
+
+このプロジェクトは主にcursorのAgentモードを使用して開発しています。
+mdcとはCursorのAIアシスタントが参照する、プロジェクト固有のルールやコンテキストを定義するための設定ファイルです。
+.cursor/rules/に配置することでCursorがファイルを読み取り開発をしてくれます。
+フォルダ構造は以下のようになっています。
+
+```
+timecard-clone/
+└── .cursor/
+    ├── rules/
+    │   ├── backend/           # バックエンド開発時のルールの詳細
+    │   ├── frontend/          # フロントエンド開発時のルールの詳細
+    ├── backend-rules.mdc       # バックエンド開発時のルール
+    ├── backend-structure.mdc   # バックエンドのフォルダ構造
+    ├── frontend-rules.mdc      # フロントエンド開発時のルール
+    ├── frontend-structure.mdc  # フロントエンのフォルダ構造
+    ├── project-rules.mdc       # 本プロジェクト開発時の共通ルール
+    ├── require-definition.mdc  # 本プロジェクトの要件定義の概要
+```
+
 ## 注意事項
 
 - `.env` ファイルは各自で作成してください（`.env.example` を参考）
 - データベースマイグレーションは Alembic を使用
 - API型定義は OpenAPI スキーマから自動生成
-- pnpm workspace を使用しているため、npm/yarn は使用しないでください 
+- pnpm workspace を使用しているため、npm/yarn は使用しないでください

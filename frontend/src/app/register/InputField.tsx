@@ -1,4 +1,3 @@
-// components/form/InputField.tsx
 import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
 
 type Props = {

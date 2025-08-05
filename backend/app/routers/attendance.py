@@ -15,7 +15,7 @@ from app.schemas.attendance import (
     MonthlyAttendanceSummary
 )
 from app.services.attendance_service import AttendanceService
-from app.auth.dependencies import get_current_active_user
+from app.dependencies.auth import get_current_active_user
 
 router = APIRouter(prefix="/attendance", tags=["勤怠管理"])
 
@@ -123,7 +123,7 @@ async def get_today_record(
     db: Session = Depends(get_db)
 ):
     """今日の勤怠記録を取得"""
-    record = AttendanceService.get_today_record(db, current_user.id)
+    record = AttendanceService.get_today_record(db, current_user)
     if not record:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -141,20 +141,10 @@ async def get_attendance_history(
 ):
     """勤怠履歴を取得"""
     if year and month:
-        # 指定された年月の記録を取得
-        from datetime import datetime
-        import calendar
-        first_day = date(year, month, 1)
-        last_day = date(year, month, calendar.monthrange(year, month)[1])
+        records = AttendanceService.get_monthly_records(db, current_user, year, month)
     else:
-        # 過去30日間の記録を取得
-        from datetime import timedelta
-        end_date = date.today()
-        start_date = end_date - timedelta(days=30)
-        first_day = start_date
-        last_day = end_date
-
-    records = AttendanceService.get_user_records(db, current_user.id, first_day, last_day)
+        records = AttendanceService.get_recent_records(db, current_user)
+    
     return records
 
 
@@ -165,17 +155,13 @@ async def get_attendance_summary(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """勤怠集計を取得"""
+    """勤怠サマリーを取得"""
     if year and month:
-        summary = AttendanceService.get_monthly_summary(db, current_user.id, year, month)
-        return summary.get("records", [])
+        summary = AttendanceService.get_monthly_summary(db, current_user, year, month)
     else:
-        # 過去30日間の集計を取得
-        from datetime import timedelta
-        end_date = date.today()
-        start_date = end_date - timedelta(days=30)
-        records = AttendanceService.get_user_records(db, current_user.id, start_date, end_date)
-        return records
+        summary = AttendanceService.get_recent_summary(db, current_user)
+    
+    return summary
 
 
 @router.get("/summary/monthly", response_model=MonthlyAttendanceSummary)
@@ -185,8 +171,8 @@ async def get_monthly_summary(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """月次勤怠集計を取得"""
-    summary = AttendanceService.get_monthly_summary(db, current_user.id, year, month)
+    """月次勤怠サマリーを取得"""
+    summary = AttendanceService.get_monthly_summary(db, current_user, year, month)
     return summary
 
 
@@ -195,25 +181,6 @@ async def get_attendance_status(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """現在の勤怠状況を取得"""
-    record = AttendanceService.get_today_record(db, current_user.id)
-    
-    if not record:
-        return {
-            "is_working": False,
-            "is_clocked_in": False,
-            "is_clocked_out": False,
-            "message": "今日はまだ出勤していません"
-        }
-    
-    return {
-        "is_working": record.is_working,
-        "is_clocked_in": record.is_clocked_in,
-        "is_clocked_out": record.is_clocked_out,
-        "clock_in_time": record.clock_in,
-        "clock_out_time": record.clock_out,
-        "total_hours": record.total_hours,
-        "overtime_hours": record.overtime_hours,
-        "status": record.status,
-        "message": "勤務中" if record.is_working else "退勤済み" if record.is_clocked_out else "出勤済み"
-    } 
+    """勤怠状態を取得"""
+    status = AttendanceService.get_attendance_status(db, current_user)
+    return status 

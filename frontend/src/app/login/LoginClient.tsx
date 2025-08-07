@@ -84,21 +84,17 @@ const PasswordField = memo(
     register,
     errors,
     isLoading,
-    showPassword,
-    setShowPassword,
   }: {
     register: any;
     errors: any;
     isLoading: boolean;
-    showPassword: boolean;
-    setShowPassword: (show: boolean) => void;
   }) => (
     <PasswordFieldComponent
       id="password"
       label="パスワード"
       placeholder="パスワードを入力"
       register={register('password')}
-      error={errors.confirmPassword}
+      error={errors.password}
       disabled={isLoading}
     />
   )
@@ -182,7 +178,6 @@ const Footer = memo(() => (
 Footer.displayName = 'Footer';
 
 export function LoginClient() {
-  const [showPassword, setShowPassword] = useState(false);
   const { isLoading, showSuccessMessage, errorMessage, handleLogin } =
     useLogin();
 
@@ -226,8 +221,6 @@ export function LoginClient() {
               register={register}
               errors={errors}
               isLoading={isLoading}
-              showPassword={showPassword}
-              setShowPassword={setShowPassword}
             />
 
             {/* ログインボタン */}

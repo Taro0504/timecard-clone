@@ -4,12 +4,12 @@ export const registerSchema = z
   .object({
     firstName: z
       .string()
-      .min(1, '姓は必須です')
-      .min(2, '姓は2文字以上で入力してください'),
-    lastName: z
-      .string()
       .min(1, '名は必須です')
       .min(2, '名は2文字以上で入力してください'),
+    lastName: z
+      .string()
+      .min(1, '姓は必須です')
+      .min(2, '姓は2文字以上で入力してください'),
     email: z
       .string()
       .min(1, 'メールアドレスは必須です')

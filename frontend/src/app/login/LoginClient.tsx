@@ -9,7 +9,7 @@ import {
   FaBuilding,
 } from 'react-icons/fa';
 import { useLogin } from '@/hooks/useLogin';
-import { LoginFormData, loginSchema } from './roginSchema';
+import { LoginFormData, loginSchema } from './loginSchema';
 import { PasswordField as PasswordFieldComponent } from '../../components/common/formFields/PasswordField';
 import { InputField } from '../../components/common/formFields/InputField';
 

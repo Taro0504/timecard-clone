@@ -3,27 +3,15 @@
 import { useState, memo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import {
   FaCheckCircle,
   FaExclamationTriangle,
   FaBuilding,
 } from 'react-icons/fa';
 import { useLogin } from '@/hooks/useLogin';
-
-// バリデーションスキーマ
-const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'メールアドレスは必須です')
-    .email('正しいメールアドレス形式で入力してください'),
-  password: z
-    .string()
-    .min(1, 'パスワードは必須です')
-    .min(6, 'パスワードは6文字以上で入力してください'),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
+import { LoginFormData, loginSchema } from './roginSchema';
+import { PasswordField as PasswordFieldComponent } from '../../components/common/formFields/PasswordField';
+import { InputField } from '../../components/common/formFields/InputField';
 
 // ヘッダーコンポーネント
 const LoginHeader = memo(() => (
@@ -77,29 +65,14 @@ const EmailField = memo(
     errors: any;
     isLoading: boolean;
   }) => (
-    <div>
-      <label
-        htmlFor="email"
-        className="block text-sm font-medium text-gray-700 mb-2"
-      >
-        メールアドレス
-      </label>
-      <input
-        id="email"
-        type="email"
-        {...register('email')}
-        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-          errors.email
-            ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-            : 'border-gray-300'
-        }`}
-        placeholder="your@email.com"
-        disabled={isLoading}
-      />
-      {errors.email && (
-        <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
-      )}
-    </div>
+    <InputField
+      id="email"
+      label="メールアドレス"
+      placeholder="your@email.com"
+      register={register('email')}
+      error={errors.email}
+      disabled={isLoading}
+    />
   )
 );
 
@@ -120,41 +93,14 @@ const PasswordField = memo(
     showPassword: boolean;
     setShowPassword: (show: boolean) => void;
   }) => (
-    <div>
-      <label
-        htmlFor="password"
-        className="block text-sm font-medium text-gray-700 mb-2"
-      >
-        パスワード
-      </label>
-      <div className="relative">
-        <input
-          id="password"
-          type={showPassword ? 'text' : 'password'}
-          {...register('password')}
-          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors pr-12 ${
-            errors.password
-              ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-              : 'border-gray-300'
-          }`}
-          placeholder="パスワードを入力"
-          disabled={isLoading}
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          className="absolute inset-y-0 right-0 pr-3 flex items-center"
-          disabled={isLoading}
-        >
-          <span className="text-gray-400 text-sm">
-            {showPassword ? '🙈' : '👁️'}
-          </span>
-        </button>
-      </div>
-      {errors.password && (
-        <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
-      )}
-    </div>
+    <PasswordFieldComponent
+      id="password"
+      label="パスワード"
+      placeholder="パスワードを入力"
+      register={register('password')}
+      error={errors.confirmPassword}
+      disabled={isLoading}
+    />
   )
 );
 

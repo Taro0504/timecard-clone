@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation';
 import { FaExclamationTriangle, FaBuilding } from 'react-icons/fa';
 import { apiClient } from '@/lib/api';
 import { RegisterFormData, registerSchema } from './registerSchema';
-import { InputField } from './InputField';
-import { PasswordField } from './PasswordField';
+import { InputField } from '../../components/common/formFields/InputField';
+import { PasswordField } from '../../components/common/formFields/PasswordField';
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);

@@ -9,7 +9,8 @@ from app.models.user import User
 from app.schemas.auth import UserCreate, UserLogin, UserResponse, Token
 from app.core.security import verify_password, get_password_hash, create_access_token, add_to_blacklist
 from app.core.config import settings
-from app.auth.dependencies import get_current_admin_user, get_current_active_user, get_token_from_request
+from app.dependencies.auth import get_current_admin_user, get_current_active_user, get_token_from_request
+from app.services.auth_service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["認証"])
 
@@ -23,40 +24,24 @@ def check_login_restriction(email: str) -> bool:
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register(user_data: UserCreate, db: Session = Depends(get_db)):
-    """ユーザー登録"""
-    # メールアドレスの重複チェック
-    existing_user = db.query(User).filter(User.email == user_data.email).first()
-    if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="このメールアドレスは既に使用されています"
-        )
+async def register(user_data: UserCreate, db: Session = Depends(get_db)) -> UserResponse:
+    """
+    ユーザー登録
     
-    # パスワードの長さチェック
-    if len(user_data.password) < settings.min_password_length:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"パスワードは{settings.min_password_length}文字以上である必要があります"
-        )
+    Args:
+        user_data: ユーザー作成データ
+        db: データベースセッション
+        
+    Returns:
+        作成されたユーザー情報
+        
+    Raises:
+        HTTPException: バリデーションエラーまたは重複エラー
+    """
+    # サービス層でユーザー作成処理を実行
+    created_user = await AuthService.create_user(user_data, db)
     
-    # ユーザー作成
-    hashed_password = get_password_hash(user_data.password)
-    db_user = User(
-        email=user_data.email,
-        hashed_password=hashed_password,
-        first_name=user_data.first_name,
-        last_name=user_data.last_name,
-        role=user_data.role,
-        department=user_data.department,
-        employee_id=user_data.employee_id,
-    )
-    
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    
-    return db_user
+    return created_user
 
 
 @router.post("/login", response_model=Token)

@@ -13,12 +13,21 @@ dependencies = [
     "uvicorn[standard]",
     "sqlalchemy",
     "pydantic",
+    "pydantic-settings",
     "python-dotenv",
+    "python-jose[cryptography]",
+    "python-multipart",
+    "passlib[bcrypt]",
+    "email-validator",
+    "cryptography",
+    "bcrypt",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
     "httpx",
     "black",
     "ruff",

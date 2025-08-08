@@ -6,7 +6,7 @@ from app.database.database import get_db
 from app.models.user import User
 from app.schemas.auth import UserResponse
 from app.schemas.user import UserProfile, UserProfileUpdate
-from app.auth.dependencies import get_current_active_user, get_current_admin_user
+from app.dependencies.auth import get_current_active_user, get_current_admin_user
 
 router = APIRouter(prefix="/users", tags=["ユーザー管理"])
 

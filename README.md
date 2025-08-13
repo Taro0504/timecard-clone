@@ -11,7 +11,6 @@
 - **TypeScript 5.5.4**
 - **TailwindCSS 3.4.0**
 - **shadcn/ui**
-- **TanStack Query 5.56.2** (データフェッチング)
 - **TanStack Table 8.19.3** (テーブル管理)
 - **React Hook Form 7.53.0** (フォーム管理)
 - **Zod 3.23.8** (バリデーション)

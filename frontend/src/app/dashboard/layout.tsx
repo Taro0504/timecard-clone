@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { DashboardClient } from './DashboardClient';
-import { LoadingSpinner } from '@/components/dashboard/LoadingSpinner';
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 
 // Server Componentとして認証チェックを行う
 async function getAuthData() {

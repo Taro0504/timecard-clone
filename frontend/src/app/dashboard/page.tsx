@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { DashboardPageClient } from './DashboardPageClient';
-import { LoadingSpinner } from '@/components/dashboard/LoadingSpinner';
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 
 // Server Componentとしてデータフェッチを行う
 async function getDashboardData() {

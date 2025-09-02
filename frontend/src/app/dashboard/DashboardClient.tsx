@@ -218,9 +218,13 @@ export function DashboardClient({ children, authData }: DashboardClientProps) {
 
   const handleLogout = async () => {
     try {
+      // 既存のアプリ内トークン処理がある場合は呼ぶ
       await logout();
     } catch (error) {
       console.error('ログアウトエラー:', error);
+    } finally {
+      // Auth0のログアウトへ遷移
+      window.location.href = '/auth/logout?returnTo=/login';
     }
   };
 

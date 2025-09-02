@@ -10,6 +10,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // すべてのルートを対象にするが、静的ファイルや公開ページは除外
-    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|auth|login|register).*)',
+    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|login|register).*)',
   ],
 };

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { FaBars, FaBell, FaBuilding, FaSignOutAlt } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
 import { navigation, adminNavigation } from '@/lib/constants/navigation';
+import { useUser as useAuth0User } from '@auth0/nextjs-auth0';
 import { NavigationItemComponent } from '@/components/dashboard/NavigationItem';
 
 interface AuthData {
@@ -115,9 +116,10 @@ const Sidebar = memo(
     user: { last_name?: string; full_name?: string; role?: string } | null;
     onLogout: () => void;
   }) => {
-    const pathname = usePathname();
+    const pathname = usePathname() || '';
 
     const isActive = (href: string) => {
+      if (!href) return false;
       if (href === '/dashboard') {
         return pathname === href;
       }
@@ -195,24 +197,38 @@ Sidebar.displayName = 'Sidebar';
 
 export function DashboardClient({ children, authData }: DashboardClientProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const pathname = usePathname();
+  const pathname = usePathname() || '';
   const router = useRouter();
   const { user, logout, isAuthenticated, isLoading } = useAuth();
+  const { user: auth0User, isLoading: auth0Loading } = useAuth0User();
 
-  // 認証チェック
+  type Auth0UserShape =
+    | { sub?: string; email?: string; name?: string; picture?: string }
+    | null
+    | undefined;
+  const mapAuth0ToUser = (u: Auth0UserShape) =>
+    u
+      ? {
+          last_name: undefined,
+          full_name: u.name ?? u.email ?? 'ユーザー',
+          role: undefined as string | undefined,
+        }
+      : null;
+
+  // 認証チェック（Auth0セッションも考慮）
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isLoading && !auth0Loading && !isAuthenticated && !auth0User) {
       router.push('/login');
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, isLoading, auth0User, auth0Loading, router]);
 
   // ローディング中は何も表示しない
-  if (isLoading) {
+  if (isLoading || auth0Loading) {
     return null;
   }
 
   // 認証されていない場合は何も表示しない（リダイレクト中）
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !auth0User) {
     return null;
   }
 
@@ -230,16 +246,19 @@ export function DashboardClient({ children, authData }: DashboardClientProps) {
 
   const currentPageName =
     navigation.find((item) => {
+      if (!pathname) return false;
       if (item.href === '/dashboard') {
         return pathname === item.href;
       }
       return pathname.startsWith(item.href);
     })?.name ||
-    adminNavigation.find((item) => pathname.startsWith(item.href))?.name ||
+    adminNavigation.find((item) => pathname && pathname.startsWith(item.href))
+      ?.name ||
     'ダッシュボード';
 
   // authDataからユーザー情報を使用
-  const currentUser = user || authData.user;
+  const currentUser =
+    user || authData.user || mapAuth0ToUser(auth0User as Auth0UserShape);
 
   return (
     <div className="min-h-screen bg-gray-50 lg:flex">

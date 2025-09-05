@@ -129,6 +129,14 @@ class ApiClient {
     });
   }
 
+  async getAuth0Me(authToken: string): Promise<{ user: unknown }> {
+    return this.request<{ user: unknown }>('/auth/me/auth0', {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+  }
+
   async register(data: RegisterRequest): Promise<UserResponse> {
     return this.request<UserResponse>('/auth/register', {
       method: 'POST',

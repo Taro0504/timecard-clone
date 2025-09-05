@@ -31,6 +31,12 @@ class Settings(BaseSettings):
         "user@example.com",
         # 追加の許可ユーザーをここに記述
     ]
+
+    # Auth0 設定
+    auth0_domain: str | None = None
+    auth0_audience: str | None = None
+    auth0_issuer: str | None = None
+    auth0_algorithms: list[str] = ["RS256"]
     
     class Config:
         env_file = ".env"

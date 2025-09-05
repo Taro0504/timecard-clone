@@ -9,10 +9,19 @@ from app.models.user import User
 from app.schemas.auth import UserCreate, UserLogin, UserResponse, Token
 from app.core.security import verify_password, get_password_hash, create_access_token, add_to_blacklist
 from app.core.config import settings
-from app.dependencies.auth import get_current_admin_user, get_current_active_user, get_token_from_request
+from app.dependencies.auth import (
+    get_current_admin_user,
+    get_current_active_user,
+    get_token_from_request,
+    get_auth0_claims,
+)
 from app.services.auth_service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["認証"])
+@router.get("/me/auth0")
+async def get_me_auth0(claims: dict = Depends(get_auth0_claims)):
+    """Auth0のクレームを返す（連携確認用）」"""
+    return {"user": claims}
 
 
 def check_login_restriction(email: str) -> bool:

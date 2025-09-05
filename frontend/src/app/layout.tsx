@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Auth0Provider } from './Auth0Provider';
-
+import { AuthProvider } from '@/contexts/AuthContext';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -18,7 +18,9 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={inter.className}>
-        <Auth0Provider>{children}</Auth0Provider>
+        <Auth0Provider>
+          <AuthProvider>{children}</AuthProvider>
+        </Auth0Provider>
       </body>
     </html>
   );

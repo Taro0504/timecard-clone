@@ -123,7 +123,7 @@ async def get_today_record(
     db: Session = Depends(get_db)
 ):
     """今日の勤怠記録を取得"""
-    record = AttendanceService.get_today_record(db, current_user)
+    record = AttendanceService.get_today_record(db, current_user.id)
     if not record:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

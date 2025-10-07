@@ -225,6 +225,14 @@ export function LoginClient() {
 
             {/* ログインボタン */}
             <LoginButton isLoading={isLoading} />
+
+            {/* Auth0でログイン */}
+            <a
+              href="/auth/login"
+              className="w-full inline-flex justify-center items-center py-3 px-4 rounded-lg font-medium text-white bg-gray-800 hover:bg-black transition-colors"
+            >
+              Auth0でログイン
+            </a>
           </form>
 
           {/* その他のオプション */}

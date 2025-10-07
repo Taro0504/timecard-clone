@@ -1,3 +1,5 @@
+'use client';
+
 import { memo } from 'react';
 import Link from 'next/link';
 import { NavigationItem } from '@/lib/constants/navigation';

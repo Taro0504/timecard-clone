@@ -50,25 +50,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initAuth();
   }, []);
 
-  const login = async (data: LoginRequest) => {
-    try {
-      const response = await apiClient.login(data);
-      const { access_token } = response;
-
-      // トークンを保存
-      localStorage.setItem('auth_token', access_token);
-      setToken(access_token);
-
-      // ユーザー情報を取得
-      const userData = await apiClient.getCurrentUser(access_token);
-      setUser(userData);
-
-      // ダッシュボードにリダイレクト
-      router.push('/dashboard');
-    } catch (error) {
-      console.error('ログインエラー:', error);
-      throw error;
-    }
+  const login = async () => {
+    // Auth0に統一したため、ここではAuth0のログインルートへ遷移のみ行う
+    window.location.href = '/api/auth/login';
   };
 
   const logout = async () => {

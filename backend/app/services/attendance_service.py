@@ -332,5 +332,5 @@ class AttendanceService:
             "total_work_hours": round(total_work_hours, 2),
             "total_overtime_hours": round(total_overtime_hours, 2),
             "average_daily_hours": round(average_daily_hours, 2),
-            "records": records
+            "attendance_records": records
         } 

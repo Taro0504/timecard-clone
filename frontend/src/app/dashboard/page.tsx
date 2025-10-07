@@ -1,11 +1,36 @@
-import { Suspense } from 'react';
-import { DashboardPageClient } from './DashboardPageClient';
-import { LoadingSpinner } from '@/components/common/LoadingSpinner';
+import { redirect } from 'next/navigation';
+import type { Route } from 'next';
+import Link from 'next/link';
+import { getAuthData } from '@/lib/auth/getAuthData';
+import { WelcomeMessageClient } from '@/components/dashboard/WelcomeMessageClient';
+import { AttendancePanelClient } from '@/components/dashboard/AttendancePanelClient';
+import { QuickAccessCard } from '@/components/dashboard/QuickAccessCard';
+import { AdminMenuCard } from '@/components/dashboard/AdminMenuCard';
+import { NewsItem } from '@/components/dashboard/NewsItem';
 
-// Server Componentとしてデータフェッチを行う
-async function getDashboardData() {
-  // サーバーサイドでのデータフェッチ
-  // 実際の実装では、APIからデータを取得
+type DashboardData = {
+  quickAccessItems: {
+    title: string;
+    description: string;
+    href: Route;
+    icon: string;
+  }[];
+  adminMenuItems: {
+    title: string;
+    description: string;
+    href: Route;
+    icon: string;
+  }[];
+  newsItems: {
+    id: string;
+    title: string;
+    date: string;
+    type: 'info' | 'success' | 'warning';
+    icon: string;
+  }[];
+};
+
+async function getDashboardData(): Promise<DashboardData> {
   return {
     quickAccessItems: [
       {
@@ -93,10 +118,62 @@ async function getDashboardData() {
 
 export default async function DashboardPage() {
   const dashboardData = await getDashboardData();
+  const authData = await getAuthData();
+  if (!authData.isAuthenticated) redirect('/login');
 
   return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <DashboardPageClient dashboardData={dashboardData} />
-    </Suspense>
+    <div className="max-w-6xl mx-auto">
+      {/* 挨拶＆現在時刻（クライアント小島） */}
+      <WelcomeMessageClient userName={authData.user?.full_name ?? 'ユーザー'} />
+
+      {/* 出退勤（クライアント小島） */}
+      <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">勤怠管理</h2>
+          <AttendancePanelClient />
+        </div>
+      </div>
+
+      {/* クイックアクセス（ServerでSSR） */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {dashboardData.quickAccessItems.map((item) => (
+          <QuickAccessCard key={item.title} {...item} />
+        ))}
+      </div>
+
+      {/* 管理者向け（ServerでSSR、表示可否はroleで分岐） */}
+      {authData.user?.role === 'admin' && (
+        <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl shadow-lg p-6 mb-8">
+          <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+            {/* 見出しアイコンは必要ならServer側で直接設置 */}
+            <span className="mr-2">👑</span>
+            管理者メニュー
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {dashboardData.adminMenuItems.map((item) => (
+              <AdminMenuCard key={item.title} {...item} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 最近のお知らせ（ServerでSSR） */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <h3 className="text-lg font-bold text-gray-900 mb-4">最新のお知らせ</h3>
+        <div className="space-y-3">
+          {dashboardData.newsItems.map((item) => (
+            <NewsItem key={item.id} {...item} />
+          ))}
+          {dashboardData.newsItems.length === 0 && (
+            <p className="text-sm text-gray-500">
+              現在お知らせはありません。
+              <Link href="/dashboard" className="underline">
+                一覧を見る
+              </Link>
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
